@@ -40,43 +40,11 @@
   </script>
   <script src="https://www.google-analytics.com/analytics.js" async defer></script>
 
-    My ID <input type="text" name="myID" id="myID"><br>
-    Your ID <input type="text" name="yourID" id="yourID"><br>
-  <button type="button" onclick="conn()">Connect!</button>
-
-  <script>
-    var peer = new Peer();
-
-    peer.on('open', function(id) {
-      document.getElementById("myID").value = id;
-    });
-
-    function conn()
-    {
-      var h = new MediaStream();
-      var id = document.getElementById("yourID").value;
+    <a href="student.html">Student</a>
+    <br/>
+    <a href="classroom.html">Classroom</a>
 
 
-      var conn = peer.connect(id);
-
-      // Call a peer, providing our mediaStream
-      var call = peer.call(id, h);
-
-      if(id==""){
-      peer.on('call', function(call) {
-        // Answer the call, providing our mediaStream
-        call.answer(h);
-      });
-      }
-
-      call.on('stream', function(stream) {
-        // `stream` is the MediaStream of the remote peer.
-        // Here you'd add it to an HTML video/canvas element.
-        alert("HI");
-      });
-
-    }
-  </script>
 </body>
 
 </html>

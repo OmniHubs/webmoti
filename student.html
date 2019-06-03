@@ -46,13 +46,14 @@
   My ID <input type="text" name="myID" id="myID"><br>
   Classroom ID <input type="text" name="classID" id="classID"><br>
   <button type="button" onclick="createConn()">Connect!</button>
-  <button type="button" onclick="call()">Call</button>
+  <button type="button" onclick="callClass()">Call</button>
   <script>
     //Declaring vars
     var peer = null;
     var classID = null;
     var myID = null;
     var conn = null;
+    var call = null;
 
     function initialize()
     {
@@ -87,26 +88,27 @@
       });
     }
 
-    function call()
+    function callClass()
     {
       let constraints = { audio: true, video: true };
 
       navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream) {
           /* use the stream */
-          let call = peer.call(classID, stream);
+            alert(classID);
+          call = peer.call(classID, stream);
+          call.on('stream', function(stream) {
+                // `stream` is the MediaStream of the remote peer.
+                // Here you'd add it to an HTML video/canvas element.
+                $("#video")[0].srcObject = stream;
 
+            });
         })
         .catch(function(err) {
           /* handle the error */
         });
 
-      call.on('stream', function(stream) {
-        // `stream` is the MediaStream of the remote peer.
-        // Here you'd add it to an HTML video/canvas element.
-        $("#video")[0].srcObject = stream;
 
-      });
 
 
     }

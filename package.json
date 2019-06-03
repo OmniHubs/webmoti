@@ -1,35 +1,23 @@
 {
-  "name": "webmoti1.11",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.0.1",
-    "bootstrap": "^4.3.1",
-    "react": "^16.8.6",
-    "react-blur": "^0.6.0",
-    "react-dom": "^16.8.6",
-    "react-progressive-image-loading": "^3.0.3",
-    "react-scripts": "3.0.1"
-  },
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "node ./bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "http-errors": "^1.7.2",
+    "jade": "^1.11.0",
+    "morgan": "^1.9.1",
+    "node": "^12.3.1",
+    "peerjs-nodejs": "^1.1.3"
   }
 }

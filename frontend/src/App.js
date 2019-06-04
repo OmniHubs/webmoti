@@ -7,7 +7,10 @@ class App extends Component  {
     constructor(props){
         super(props);
         // empty currently
-        this.state = { apiResponse: ""}
+        this.state = {
+            apiResponse: "",
+            anotherResponse: ""
+        }
     }
 
     callAPI(){
@@ -17,8 +20,16 @@ class App extends Component  {
             .catch(err => err);
     }
 
+    anotherAPI(){
+        fetch("http://localhost:9000/student")
+            .then(res => res.text())
+            .then(res => this.setState({anotherResponse: res }))
+            .catch(err => err);
+    }
+
     componentDidMount(){
         this.callAPI();
+        this.anotherAPI();
     }
 
 
@@ -30,6 +41,7 @@ class App extends Component  {
                     <h1 className="App-title">Welcome to React</h1>
                 </header>
                 <p className="App-intro">{this.state.apiResponse}</p>
+                <p className="anotherIntro">{this.state.anotherResponse}</p>
             </div>
         );
     }

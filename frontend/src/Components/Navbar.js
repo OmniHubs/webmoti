@@ -78,10 +78,10 @@ function Navbar() {
                         />
                     </div>
                     <Button variant="contained" className={classes.button}>
-                    Sasquatch
+                    BONBON
                 </Button>
                     <Button variant="contained" className={classes.button}>
-                        WhoIsGay
+                        You Are
                     </Button>
                     <TextField
                         id="standard-name"

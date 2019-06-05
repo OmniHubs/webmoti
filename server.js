@@ -5,9 +5,9 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const logger = require("morgan")
 const cors = require("cors")
+const http = require('http');
+const fs = require('fs')
 
-const axios = require("axios")
-const socketIo = require("socket.io")
 
 const indexRouter = require('./routing/index')
 const usersRouter = require('./routing/student')
@@ -15,6 +15,14 @@ const classTesting = require('./routing/classroom')
 const anotherTest = require('./routing/anotherTest')
 
 const app = express()
+
+const socketIo = require("socket.io");
+const ss = require('socket.io-stream');
+const socketPort = 4001;
+
+const myServer = http.createServer(app)
+const io = socketIo(myServer);
+myServer.listen(socketPort, () => console.log(`listening on port ${socketPort}`))
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -32,11 +40,36 @@ app.use("/student", usersRouter)
 app.use("/classroom", classTesting)
 app.use("anotherTest", anotherTest)
 
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    next(createError(404));
-});
+    next(createError(404))
+})
+
+
+
+io.on("connection", socket =>  {
+    console.log("New client connected")
+    try{
+        socket.emit('FromAPI', "Hi THERE BUDDY ITS WORKING")
+    }catch (error){
+        throw(error)
+    }
+    // socket.on("disconnect", () => {
+    //     console.log("Client disconnected")
+    // })
+})
+
+// ServerSide STREAMMMMMMMMMMMMm
+
+io.of('/').on('connection', function(socket){
+    ss(socket).on('profile-image', function(stream, data){
+        const path = require('./video/video.mp4')
+        const filename = path.basename(data.name)
+        console.log(filename);
+        stream.pipe(fs.0(filename))
+    })
+})
+
 
 // error handler
 app.use(function(err, req, res, next) {

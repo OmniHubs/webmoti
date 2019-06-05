@@ -1,20 +1,20 @@
-/**
- * Created by Garo on 2019-06-03.
- */
 
-var createError = require("http-errors")
-var express = require("express")
-var path = require("path")
-var cookieParser = require("cookie-parser")
-var logger = require("morgan")
-var cors = require("cors")
+const createError = require("http-errors")
+const express = require("express")
+const path = require("path")
+const cookieParser = require("cookie-parser")
+const logger = require("morgan")
+const cors = require("cors")
 
+const axios = require("axios")
+const socketIo = require("socket.io")
 
-var indexRouter = require('./routing/index')
-var usersRouter = require('./routing/student')
-var classTesting = require('./routing/classroom')
+const indexRouter = require('./routing/index')
+const usersRouter = require('./routing/student')
+const classTesting = require('./routing/classroom')
+const anotherTest = require('./routing/anotherTest')
 
-var app = express()
+const app = express()
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter)
 app.use("/student", usersRouter)
 app.use("/classroom", classTesting)
+app.use("anotherTest", anotherTest)
 
 
 // catch 404 and forward to error handler

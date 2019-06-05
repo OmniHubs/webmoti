@@ -2,19 +2,26 @@
  * Created by Garo on 2019-06-03.
  */
 
+
+var http = require("http");
 var createError = require("http-errors")
 var express = require("express")
 var path = require("path")
 var cookieParser = require("cookie-parser")
 var logger = require("morgan")
 var cors = require("cors")
-
-
+const socketIo = require("socket.io");
+const socketPort = 4001;
 var indexRouter = require('./routing/index')
 var usersRouter = require('./routing/student')
 var classTesting = require('./routing/classroom')
 
-var app = express()
+var app = express();
+
+//Setting up the socketServer
+const socketServer = http.createServer(app);
+const io = socketIo(socketServer);
+socketServer.listen(socketPort, () => console.log(`Listening on port ${socketPort}`));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -31,6 +38,16 @@ app.use("/", indexRouter)
 app.use("/student", usersRouter)
 app.use("/classroom", classTesting)
 
+//Setting up the socket connection
+io.on("connection", socket => {
+    console.log("Connected!");
+    try {
+        socket.emit("fromSocket", 'HELLOOOO!');
+    }catch (error)
+    {
+        console.error(`Error: ${error.code}`);
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -38,14 +38,16 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter)
 app.use("/student", usersRouter)
 app.use("/classroom", classTesting)
-app.use("anotherTest", anotherTest)
+app.use("/anotherTest", anotherTest)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404))
 })
 
-
+app.get('/', function(req, res){
+    res.send('<h1>Hello there commrade</h1>')
+})
 
 io.on("connection", socket =>  {
     console.log("New client connected")
@@ -61,14 +63,15 @@ io.on("connection", socket =>  {
 
 // ServerSide STREAMMMMMMMMMMMMm
 
-io.of('/').on('connection', function(socket){
-    ss(socket).on('profile-image', function(stream, data){
-        const path = require('./video/video.mp4')
-        const filename = path.basename(data.name)
-        console.log(filename);
-        stream.pipe(fs.0(filename))
-    })
-})
+// io.of('/').on('connection', function(socket){
+//     ss(socket).on('profile-image', function(stream, data){
+//         const path = require('./video/video.mp4')
+//         const filename = path.basename(data.name)
+//         console.log(filename);
+//         stream.pipe(fs.createWriteStream(filename))
+//     })
+// })
+
 
 
 // error handler

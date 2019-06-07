@@ -49,6 +49,13 @@ io.on("connection", socket => {
     }
 });
 
+io.on('connection', function(socket){
+    socket.on('stre', function(stream){
+        console.log('message: ' + msg);
+    });
+});
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));

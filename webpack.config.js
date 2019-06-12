@@ -1,5 +1,14 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 module.exports = {
+    node: {
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty'
+    },
+    module: {
+        noParse: ['ws']
+    },
+    externals: ['ws'],
   module: {
     rules: [
       {

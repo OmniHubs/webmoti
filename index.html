@@ -23,17 +23,17 @@
                     <div id="hithere"> Webmoti </div>
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-secondary">
-                        <input type="radio" name="options" id="option2" autocomplete="off"> Classroom
+                        <input type="radio" name="options" id="classroomSelect" autocomplete="off"> Classroom
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="options" id="option3" autocomplete="off"> Student
+                        <input type="radio" name="options" id="studentSelect" autocomplete="off"> Student
                     </label>
                 </div>
             </ul>
 
             <form id="classStud" class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="ClassID" aria-label="Search">
-                <input class="form-control mr-sm-2" type="search" placeholder="StudentID" aria-label="Search">
+                <input class="form-control mr-sm-2"  id="classID" type="search" placeholder="ClassID" aria-label="Search">
+                <input class="form-control mr-sm-2" id="studentID" type="search" placeholder="StudentID" aria-label="Search">
                 <button class="btn btn-primary" type="submit">Connect</button>
             </form>
             <form class="form-inline my-2 my-lg-0">
@@ -70,7 +70,7 @@
         // muteButton.addEventListener("click", function(){
         //     if(video.muted == false){ video.mute=true;
         //     muteButton.innerHTML = "UnMute";
-        //     }else{ video.mute=false;
+        //     }else{ video.mute=false
         //     muteButton.innerHTML = "Mute";
         //     }});
         //

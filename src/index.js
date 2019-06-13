@@ -69,11 +69,12 @@ window.onload = function() {
     });
 
     // initiate connection
-    quickconnect('http://138.197.165.173:2021/', { room: 'webmoti', plugins: plugins })
+    quickconnect('https://switchboard.rtc.io/', { room: 'webmoti', plugins: plugins, debug: true})
     // broadcast our captured media to other participants in the room
         .addStream(localStream)
         // when a peer is connected (and active) pass it to us for use
         .on('call:started', function(id, pc, data) {
+          alert("hello");
           attach(pc.getRemoteStreams()[0], { plugins: plugins }, function(err, el) {
             if (err) return;
 

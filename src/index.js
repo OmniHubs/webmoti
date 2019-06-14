@@ -46,7 +46,7 @@ window.onload = function() {
 
 
     classroomSelect.addEventListener("click",function () {
-alert("");
+        rtc_passthrough();
     });
 
 
@@ -99,6 +99,11 @@ function rtc_init_classroom()
             console.log(event.data);
         }
     }
+}
+
+function rtc_passthrough()
+{
+        alert("hello");
 }
 
 

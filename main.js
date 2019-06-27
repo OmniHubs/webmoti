@@ -95,8 +95,8 @@ function showClassroom(){
     });
 
 }
-
-
+// https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo#what-are-peerconnection-mediastream-offer-answer-and-ice-candidates-examples-of-each
+//https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling
 /*
 * In order to connect with the student we need to create an offer
 *

@@ -15,8 +15,13 @@ firebase.initializeApp(firebaseConfig);
 
 // Gives you access to root of database
 const db = firebase.database().ref();
-const studentVideo = document.getElementById("studentVideo");
-const classroomVideo = document.getElementById("classroomVideo");
+
+const startConference = document.querySelector("#start");
+const receiveConference = document.querySelector("#receiver");
+
+const showStudentVideo = document.querySelector("#student-video");
+const showClassroomVideo = document.querySelector("#classroom-video");
+
 const classroomID = Math.floor(Math.random()*1000000000);
 
 // We are using both STUN and TURN servers (GOOGLE/Firefox and Viagenie) if first server doesn't work it will try the next server
@@ -32,7 +37,7 @@ const connectionState = peerObj.connectionState;
 // Called on peerObj (RTCPeerConnection) instance **ONLY AFTER ICE candidate created on classroom computer *****
 peerObj.onicecandidate = (event => event.candidate?sendMessage(classroomID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 
-peerObj.ontrack = (event => classroomVideo.srcObject = event.stream);
+peerObj.ontrack = (event => showStudentVideo.srcObject = event.track);
 
 function sendMessage(senderID, data){
     let msg = db.push({sender: senderID, message: data });
@@ -59,7 +64,7 @@ function readMessage(data) {
             });
 
         } else if(message.sdp.type == "offer"){
-          peerObj.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+          peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp))
             .then(() => peerObj.createAnswer())
             .then(answer => peerObj.setLocalDescription(answer))
             .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
@@ -81,17 +86,13 @@ function readMessage(data) {
     };
 
 
-function showClassroom(){
+startConference.addEventListener('click', async function(){
     navigator.mediaDevices.getUserMedia(constraints)
-        .then((track) => {
-            console.log(track);
-        })
-        .then((track) => pc.addTrack(track)
-        ).catch((err) => {
-        console.log(err);
-    });
-
-}
+      .then((track) => {
+        console.log(track);
+      })
+      .then((track) => peerObj.addTrack(track));
+});
 // https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo#what-are-peerconnection-mediastream-offer-answer-and-ice-candidates-examples-of-each
 //https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling
 /*

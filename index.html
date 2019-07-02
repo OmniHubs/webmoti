@@ -8,14 +8,15 @@
     <link rel="stylesheet" type="text/css" href="index.css" media="screen" />
 
 </head>
-<script>
-    document.addEventListener('load', showClassroom());
-</script>
+
 <body>
+<script src="main.js">
+</script>
+
 <video id="studentVideo" autoplay muted></video>
 <video id="classroomVideo" autoplay></video>
 <br />
-<button id="student" type="button" class="btn btn-primary btn-lg">
+<button id="student" type="button" class="btn btn-primary btn-lg" onclick="showStudent()">
     <span class="glyphicon-facetime-video" aria-hidden="true"></span>Call</button>
 </body>
 

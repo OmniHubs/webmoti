@@ -11,13 +11,13 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 
-const studentButton = document.getElementById("student");
+// const studentButton = document.getElementById("student");
 
 // Gives you access to root of database
-const db = firebase.db().ref();
+const db = firebase.database().ref();
 const studentVideo = document.getElementById("studentVideo");
 const classroomVideo = document.getElementById("classroomVideo");
-const classroomID = Math.floor(Math.random()*1000000000)
+const classroomID = Math.floor(Math.random()*1000000000);
 
 // We are using both STUN and TURN servers (GOOGLE/Firefox and Viagenie) if first server doesn't work it will try the next server
 const signallingServers = {'iceServers': [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}, {'urls': 'turn:numb.viagenie.ca','credential': 'ImdcUser1','username': 'motiweb453@mail.com'}]};
@@ -58,15 +58,15 @@ function readMessage(data) {
                 console.log("Failure during addIceCandidate(): " +e.name);
             });
 
-        } else{
-            // handle other things being signalled, like sdp
+        } else if(message.sdp.type == "offer"){
+          peerObj.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+            .then(() => peerObj.createAnswer())
+            .then(answer => peerObj.setLocalDescription(answer))
+            .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
+        } else if(message.sdp.type =="answer"){
+          peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp));
         }
-
-
-
     }
-
-
 }
 
     db.on('child_added', readMessage);
@@ -81,9 +81,6 @@ function readMessage(data) {
     };
 
 
-$(document).ready(function(){
-    showClassroom();
-})
 function showClassroom(){
     navigator.mediaDevices.getUserMedia(constraints)
         .then((track) => {
@@ -103,7 +100,7 @@ function showClassroom(){
 * Set local description to this offer
 * Then Send offer object to student by calling sendMessage and set its (session description protocol to the same one)
 */
-studentButton.onclick = function() {
+function showStudent() {
     // Initiate an SDP offer
     peerObj.createOffer()
         .then((offer) => peerObj.setLocalDescription(offer) )

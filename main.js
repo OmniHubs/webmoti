@@ -37,7 +37,7 @@ const connectionState = peerObj.connectionState;
 // Called on peerObj (RTCPeerConnection) instance **ONLY AFTER ICE candidate created on classroom computer *****
 peerObj.onicecandidate = (event => event.candidate?sendMessage(classroomID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 
-peerObj.ontrack = (ev => showStudentVideo.srcObject = ev.track);
+peerObj.onaddstream = (ev => showStudentVideo.srcObject = ev.stream);
 
 function sendMessage(senderID, data){
     let msg = db.push({sender: senderID, message: data });
@@ -87,17 +87,24 @@ function readMessage(data) {
     };
 
 
-startConference.addEventListener('click', async function(peerObj){
-  try{
-    const gumStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (e){
-    console.log("ERROR LOG: " +e);
-  }
-    console.log("HELLO THERE BUDDY ");
-    for (const track of gumStream.getTracks()){
-        peerObj.addTrack(track);
-    }
-});
+// startConference.addEventListener('click', async function(peerObj){
+//   try{
+//     const gumStream = await navigator.mediaDevices.getUserMedia(constraints);
+//   } catch (e){
+//     console.log("ERROR LOG: " +e);
+//   }
+//     console.log("HELLO THERE BUDDY ");
+//     for (const track of gumStream.getTracks()){
+//         peerObj.addTrack(track);
+//     }
+// });
+
+
+startConference.addEventListener('click',function() {
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(stream => showStudentVideo.srcObject = stream)
+    .then(stream => peerObj.addStream(stream))
+})
 // https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo#what-are-peerconnection-mediastream-offer-answer-and-ice-candidates-examples-of-each
 //https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling
 /*

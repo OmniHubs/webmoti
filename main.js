@@ -16,8 +16,8 @@ firebase.initializeApp(firebaseConfig);
 // Gives you access to root of database
 const db = firebase.database().ref();
 
-const startConference = document.querySelector("#start");
-const receiveConference = document.querySelector("#receiver");
+let startConference = document.querySelector("#start");
+let receiveConference = document.querySelector("#receiver");
 
 const showStudentVideo = document.querySelector("#student-video");
 const showClassroomVideo = document.querySelector("#classroom-video");
@@ -37,7 +37,7 @@ const connectionState = peerObj.connectionState;
 // Called on peerObj (RTCPeerConnection) instance **ONLY AFTER ICE candidate created on classroom computer *****
 peerObj.onicecandidate = (event => event.candidate?sendMessage(classroomID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 
-peerObj.ontrack = (event => showStudentVideo.srcObject = event.track);
+peerObj.ontrack = (ev => showStudentVideo.srcObject = ev.track);
 
 function sendMessage(senderID, data){
     let msg = db.push({sender: senderID, message: data });
@@ -79,19 +79,24 @@ function readMessage(data) {
 // Camera resolution and Vid/Aud settings
     const constraints = {
         audio: true,
-        video: {
-            width: { min: 1024, ideal: 1280, max: 1920 },
-            height: { min: 776, ideal: 720, max: 1080 }
-        }
+        video:true
+        //   {
+        //     width: { min: 1024, ideal: 1280, max: 1920 },
+        //     height: { min: 776, ideal: 720, max: 1080 }
+        // }
     };
 
 
-startConference.addEventListener('click', async function(){
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then((track) => {
-        console.log(track);
-      })
-      .then((track) => peerObj.addTrack(track));
+startConference.addEventListener('click', async function(peerObj){
+  try{
+    const gumStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (e){
+    console.log("ERROR LOG: " +e);
+  }
+    console.log("HELLO THERE BUDDY ");
+    for (const track of gumStream.getTracks()){
+        peerObj.addTrack(track);
+    }
 });
 // https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo#what-are-peerconnection-mediastream-offer-answer-and-ice-candidates-examples-of-each
 //https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling

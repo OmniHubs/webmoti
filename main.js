@@ -1,4 +1,5 @@
-var firebaseConfig = {
+// Initialize Cloud Firestore through firebase
+firebase.initializeApp({
     apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
     authDomain: "webmotia.firebaseapp.com",
     databaseURL: "https://webmotia.firebaseio.com",
@@ -6,15 +7,15 @@ var firebaseConfig = {
     storageBucket: "webmotia.appspot.com",
     messagingSenderId: "606747164317",
     appId: "1:606747164317:web:952c390708ccb09d"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+});
 
 
 // const studentButton = document.getElementById("student");
 
 // Gives you access to root of database
-const db = firebase.database().ref();
+ let db = firebase.firestore();
+
+let queryDB = document.querySelector("#dbQuery")
 
 let startConference = document.querySelector("#start");
 let receiveConference = document.querySelector("#receiver");
@@ -22,7 +23,7 @@ let receiveConference = document.querySelector("#receiver");
 const showStudentVideo = document.querySelector("#student-video");
 const showClassroomVideo = document.querySelector("#classroom-video");
 
-const studentID = Math.floor(Math.random()*1000000000);
+const studentID = Math.floor(Math.random()*10000);
 
 // We are using both STUN and TURN servers (GOOGLE/Firefox and Viagenie) if first server doesn't work it will try the next server
 const signallingServers = {'iceServers': [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}, {'urls': 'turn:numb.viagenie.ca','credential': 'ImdcUser1','username': 'motiweb453@mail.com'}]};
@@ -39,10 +40,20 @@ peerObj.onicecandidate = (event => event.candidate?sendMessage(studentID, JSON.s
 
 peerObj.onaddstream = (event => showClassroomVideo.srcObject = event.stream);
 
-function sendMessage(senderID, data){
-    let message = db.push({sender: senderID, message: data });
-    message.remove();
+function sendMessage(studentID, name){
+  db.collection("sdp").doc("test1").set({
+    sender: studentID,
+    name: "John",
+  })
+    .then(function() {
+      console.log("Sent by user: ", studentID + " by: "+name);
+    })
+    .catch(function(error) {
+      console.error("Error adding document: ", error);
+    });
 }
+
+
 
 function readMessage(data) {
     // Convert string back to ICE Candidate obj.
@@ -75,8 +86,13 @@ function readMessage(data) {
     }
 }
 
+    // db.on('child_added', readMessage);
+    db.collection("sdp").doc("test1")
+      .onSnapshot(function(doc){
+          readMessage();
+          console.log("Current data: ", doc.data());
+        });
 
-    db.on('child_added', readMessage);
 
 // Camera resolution and Vid/Aud settings
     const constraints = {
@@ -96,8 +112,26 @@ function readMessage(data) {
 //     }
 // });
 
+// queryDB.addEventListener('click', function(){
+//   console.log("Running the db.collection function")
+//   db.collection("waggg").doc("myUser").set({
+//     first: "Ada",
+//     last: "Lovelace",
+//     born: 1815
+//   })
+//     .then(function() {
+//       console.log("Document written with ID: ", docRef.id);
+//     })
+//     .catch(function(error) {
+//       console.error("Error adding document: ", error);
+//     });
+//
+//
+// });
+
 
 startConference.addEventListener('click',function() {
+
   navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => showStudentVideo.srcObject = stream)
     .then(stream => peerObj.addStream(stream))
@@ -138,13 +172,6 @@ peerObj.onconnectionstatechange = (() => {
             break;
     }
 });
-
-
-
-
-
-
-
 
 
 //https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/createOffer

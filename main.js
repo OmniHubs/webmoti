@@ -22,7 +22,7 @@ let receiveConference = document.querySelector("#receiver");
 const showStudentVideo = document.querySelector("#student-video");
 const showClassroomVideo = document.querySelector("#classroom-video");
 
-const classroomID = Math.floor(Math.random()*1000000000);
+const studentID = Math.floor(Math.random()*1000000000);
 
 // We are using both STUN and TURN servers (GOOGLE/Firefox and Viagenie) if first server doesn't work it will try the next server
 const signallingServers = {'iceServers': [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}, {'urls': 'turn:numb.viagenie.ca','credential': 'ImdcUser1','username': 'motiweb453@mail.com'}]};
@@ -35,7 +35,7 @@ const connectionState = peerObj.connectionState;
 
 // *****onicecandidate***** EventHandler delivers message to other peer through signaling server (signallingServers)
 // Called on peerObj (RTCPeerConnection) instance **ONLY AFTER ICE candidate created on classroom computer *****
-peerObj.onicecandidate = (event => event.candidate?sendMessage(classroomID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
+peerObj.onicecandidate = (event => event.candidate?sendMessage(studentID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 
 peerObj.onaddstream = (event => showClassroomVideo.srcObject = event.stream);
 
@@ -51,9 +51,9 @@ function readMessage(data) {
 
     /* We are sending data (Offer, Answer, and ICE candidate obj) from the Classroom to the Student
     *  Firebase sends this data to both student/classroom, we don't need it in the classroom so
-    *  we enclose most of program in in an if(sender != classroomID)
+    *  we enclose most of program in in an if(sender != studentID)
     */
-    if(sender != classroomID) {
+    if(sender != studentID) {
 
 
       // check if there's a msg
@@ -68,7 +68,7 @@ function readMessage(data) {
         peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp))
           .then(() => peerObj.createAnswer())
           .then(answer => peerObj.setLocalDescription(answer))
-          .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
+          .then(() => sendMessage(studentID, JSON.stringify({'sdp': peerObj.localDescription})));
       } else if (message.sdp.type == "answer") {
         peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp));
       }
@@ -114,7 +114,7 @@ function showStudent() {
     // Initiate an SDP offer
     peerObj.createOffer()
         .then((offer) => peerObj.setLocalDescription(offer) )
-        .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})) );
+        .then(() => sendMessage(studentID, JSON.stringify({'sdp': peerObj.localDescription})) );
 };
 
 

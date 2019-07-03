@@ -37,7 +37,7 @@ const connectionState = peerObj.connectionState;
 // Called on peerObj (RTCPeerConnection) instance **ONLY AFTER ICE candidate created on classroom computer *****
 peerObj.onicecandidate = (event => event.candidate?sendMessage(classroomID, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 
-peerObj.onaddstream = (event => showStudentVideo.srcObject = event.stream);
+peerObj.onaddstream = (event => showClassroomVideo.srcObject = event.stream);
 
 function sendMessage(senderID, data){
     let message = db.push({sender: senderID, message: data });

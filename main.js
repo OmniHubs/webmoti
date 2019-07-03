@@ -44,57 +44,37 @@ function sendMessage(senderID, data){
     message.remove();
 }
 
-// function readMessage(data) {
-//     // Convert string back to ICE Candidate obj.
-//     const message = JSON.parse(data.val().message);
-//     const sender = data.val().sender;
-//
-//     /* We are sending data (Offer, Answer, and ICE candidate obj) from the Classroom to the Student
-//     *  Firebase sends this data to both student/classroom, we don't need it in the classroom so
-//     *  we enclose most of program in in an if(sender != classroomID)
-//     */
-//     if(sender != classroomID) {
-//     if(message.ice != undefined){
-//
-//
-//
-//     }
-//         // check if there's a msg
-//         if(message.ice){
-//             // addIceCandidate() adds remote peer to RTCPeerConnections remote description
-//             peerObj.addIceCandidate(new RTCIceCandidate(message.ice))
-//                 .catch(e => {
-//                 console.log("Failure during addIceCandidate(): " +e.name);
-//             });
-//
-//         } else if(message.sdp.type == "offer"){
-//           peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp))
-//             .then(() => peerObj.createAnswer())
-//             .then(answer => peerObj.setLocalDescription(answer))
-//             .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
-//         } else if(message.sdp.type =="answer"){
-//           peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp));
-//         }
-//     }
-// }
-
-
 function readMessage(data) {
-  var message = JSON.parse(data.val().message);
-  var sender = data.val().sender;
-  if (sender != classroomID) {
-    if (message.ice != undefined)
-    if (message.ice != undefined)
-      peerObj.addIceCandidate(new RTCIceCandidate(message.ice));
-    else if (message.sdp.type == "offer")
-      peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp))
-        .then(() => peerObj.createAnswer())
-        .then(answer => message.setLocalDescription(answer))
-        .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
-    else if (message.sdp.type == "answer")
-      peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp));
-  }
-};
+    // Convert string back to ICE Candidate obj.
+    const message = JSON.parse(data.val().message);
+    const sender = data.val().sender;
+
+    /* We are sending data (Offer, Answer, and ICE candidate obj) from the Classroom to the Student
+    *  Firebase sends this data to both student/classroom, we don't need it in the classroom so
+    *  we enclose most of program in in an if(sender != classroomID)
+    */
+    if(sender != classroomID) {
+
+
+      // check if there's a msg
+      if (message.ice) {
+        // addIceCandidate() adds remote peer to RTCPeerConnections remote description
+        peerObj.addIceCandidate(new RTCIceCandidate(message.ice))
+          .catch(e => {
+            console.log("Failure during addIceCandidate(): " + e.name);
+          });
+
+      } else if (message.sdp.type == "offer") {
+        peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp))
+          .then(() => peerObj.createAnswer())
+          .then(answer => peerObj.setLocalDescription(answer))
+          .then(() => sendMessage(classroomID, JSON.stringify({'sdp': peerObj.localDescription})));
+      } else if (message.sdp.type == "answer") {
+        peerObj.setRemoteDescription(new RTCSessionDescription(message.sdp));
+      }
+    }
+}
+
 
     db.on('child_added', readMessage);
 

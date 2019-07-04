@@ -1,4 +1,3 @@
-
 // Your web app's Firebase configuration
 var firebaseConfig = {
   apiKey: "AIzaSyBHOzn-tGLUbM4KJ5KUi45onbwC-3vifcM",
@@ -13,14 +12,17 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
+//Initializing the variables
+const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
+var rpc=null;
 
 
 
-setRandomID(username);
 
-function setRandomID(textbox)
+setRandomUser(username);
+function setRandomUser(textbox)
 {
   textbox.value = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
 }
@@ -35,20 +37,27 @@ function clearBox()
 
 //Adding an event listener to send our SDP info to the server
 document.getElementById("connect").addEventListener("click", connect);
+document.getElementById("call").addEventListener("click", call);
 function connect()
 {
   handleNegotiation();
-    listenDB();
+}
+function call()
+{
+  listenEvent();
 }
 
 //Declaring iceServers
 const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
 let pc = new RTCPeerConnection(config);
+pc.onnegotiationneeded = handleNegotiation;
+pc.onicecandidate = sendIce;
+pc.ontrack = handleTrackEvent;
 
 //Getting the media from the browser asynchronously
 async function getMedia(pc) {
   let stream = null;
-  const constraints = { audio: true, video: true };
+
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById('localVideo').srcObject = stream;
@@ -89,33 +98,96 @@ function sendToServer(info)
 function sendIce(ice) {
     if (ice.candidate)
     {
-        console.log("Sent new ICE candidate")
         sendToServer({
             username: username.value,
             targetUsername: targetUsername.value,
             type: "ice-candidate",
             sdp: ice.candidate
         });
+        console.log("Sent new ICE candidate");
     }
 }
 function receiveIce(ice)
 {
+    console.log("Received new ICE Candidate");
     var candidate = new RTCIceCandidate(ice.candidate);
     pc.addIceCandidate(candidate).catch();
 }
 
+function createRPC() {
+    rpc = new RTCPeerConnection(config);
+    rpc.onicecandidate = sendIce;
+    rpc.ontrack = handleTrackEvent;
+     rpc.onnegotiationneeded = handleNegotiation;
+    // rpc.onremovetrack = handleRemoveTrackEvent;
+    // rpc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
+    // rpc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
+    // rpc.onsignalingstatechange = handleSignalingStateChangeEvent;
+ }
 
-function listenDB()
+
+
+function answerCall(call)
+{
+    var localStream = null;
+    createRPC();
+    console.log("Answering a call from: "+ call.data().username);
+    //createRPC();
+    rpc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
+       return navigator.mediaDevices.getUserMedia(constraints)
+    }).then(function(stream){
+       localStream = stream;
+       document.getElementById("localVideo").srcObject = localStream;
+       localStream.getTracks().forEach(track=> rpc.addTrack(track,localStream));
+        }).then(function(){
+            return rpc.createAnswer();
+        }).then(function(answer){
+        return rpc.setLocalDescription(answer)
+    }).then(function(){
+        sendToServer({
+            username: username.value,
+            targetUsername: targetUsername.value,
+            type: "video-answer",
+            sdp: JSON.stringify(rpc.localDescription)
+        });
+    }).catch();
+
+
+}
+function listenEvent()
 {
     //Setting up a listener for changes in targetUsername values in the database
     db.collection("SDP").doc(targetUsername.value)
         .onSnapshot(function(doc) {
             console.log("Current data: ", doc.data());
+             var user = doc.data().username;
+             var targetUser = doc.data().targetUsername;
+             var type = doc.data().type;
+             var sdp = doc.data().sdp;
+
+             if(type == "video-offer")
+             {
+               console.log("Received video offer!");
+                answerCall(doc);
+             }
+             else if(type == "ice-candidate")
+             {
+               console.log("Received ICE candidate");
+               receiveIce(sdp);
+             }
+             else if(type == "video-answer")
+             {
+               console.log("Received video-answer");
+               pc.setRemoteDescription(JSON.parse(doc.data().sdp)).catch();
+             }
         });
 }
 
-pc.onnegotiationneeded = handleNegotiation;
-pc.onicecandidate = sendIce;
+function handleTrackEvent(event)
+{
+    console.log("Attaching remote video");
+    document.getElementById("remoteVideo").srcObject = event.streams[0];
+}
 
 
 

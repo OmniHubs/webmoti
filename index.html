@@ -9,6 +9,18 @@
 
 <body>
 
+<div id="inputStyling">
+  <div>
+      <input type="text" id="loginInput"/>
+      <button id="loginBtn">Login</button>
+  </div>
+
+  <div>
+      <input type="text" id="otherUsernameInput"/>
+      <button id="connectToOtherUsernameBtn">Establish connection</button>
+    </div>
+</div>
+
 
 <video id="student-video" autoplay muted></video>
 <video id="classroom-video" autoplay></video>
@@ -19,7 +31,11 @@
     <span class="glyphicon-facetime-video" aria-hidden="true"></span>Call</button>
 <button id="dbQuery">Query the Firebase DB</button>
 <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
 <script src="main.js"></script>
 </body>
 

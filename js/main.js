@@ -17,6 +17,7 @@ const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
 var rpc=null;
+var isClassroom = true;
 
 
 
@@ -133,22 +134,22 @@ function answerCall(call)
     createRPC();
     console.log("Answering a call from: "+ call.data().username);
     //createRPC();
-    rpc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
+    pc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
        localStream = stream;
        document.getElementById("localVideo").srcObject = localStream;
-       localStream.getTracks().forEach(track=> rpc.addTrack(track,localStream));
+       localStream.getTracks().forEach(track=> pc.addTrack(track,localStream));
         }).then(function(){
-            return rpc.createAnswer();
+            return pc.createAnswer();
         }).then(function(answer){
-        return rpc.setLocalDescription(answer)
+        return pc.setLocalDescription(answer)
     }).then(function(){
         sendToServer({
             username: username.value,
             targetUsername: targetUsername.value,
             type: "video-answer",
-            sdp: JSON.stringify(rpc.localDescription)
+            sdp: JSON.stringify(pc.localDescription)
         });
     }).catch();
 

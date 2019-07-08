@@ -16,16 +16,16 @@ var db = firebase.firestore();
 const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
-var rpc=null;
-var isClassroom = true;
-
-
+var pc=null;
+var isCaller = null;
+var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
+var mediaDetails;
 
 
 setRandomUser(username);
 function setRandomUser(textbox)
 {
-  textbox.value = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
+  textbox.value = randomValue;
 }
 
 
@@ -41,16 +41,26 @@ document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
 function connect()
 {
-  handleNegotiation();
+    if(targetUsername.value == "")
+    {
+      isCaller = false;
+      console.log("You are the Callee");
+    }
+    else
+    {
+      isCaller = true;
+      console.log("You are the caller");
+    }
+  mediaDetails = getMedia(pc);
 }
 function call()
 {
   listenEvent();
 }
 
-//Declaring iceServers
+//Declaring iceServers and creating a new PeerConnection
 const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
-let pc = new RTCPeerConnection(config);
+pc = new RTCPeerConnection(config);
 pc.onnegotiationneeded = handleNegotiation;
 pc.onicecandidate = sendIce;
 pc.ontrack = handleTrackEvent;
@@ -60,14 +70,23 @@ async function getMedia(pc) {
   let stream = null;
 
   try {
+
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById('localVideo').srcObject = stream;
-    pc.addTrack(stream);
+    for (const track of stream.getTracks()) {
+      pc.addTrack(track);
+    }
+
+
     /* use the stream */
   } catch(err) {
     /* handle the error */
+    console.log("failed to add Webcam" + err);
   }
+  console.log("Got the Webcam/Media from the browser");
 }
+
+
 
 
 function handleNegotiation(){
@@ -80,13 +99,14 @@ pc.createOffer().then(function (offer) {
       username: username.value,
       targetUsername: targetUsername.value,
       type: "video-offer",
-      sdp: JSON.stringify(pc.localDescription)
+      sdp: pc.localDescription
   });
 });
 
 }
 function sendToServer(info)
 {
+  console.log("Sending data from "+ info['username']+" to "+ info['targetUsername'] );
   var user = info["username"];
   db.collection("SDP").doc(user).set(info)
       .then(function(docRef) {
@@ -96,6 +116,9 @@ function sendToServer(info)
         console.error("Error adding document: ", error);
       });
 }
+
+
+//The ice sending/receiving functions
 function sendIce(ice) {
     if (ice.candidate)
     {
@@ -103,14 +126,14 @@ function sendIce(ice) {
             username: username.value,
             targetUsername: targetUsername.value,
             type: "ice-candidate",
-            sdp: ice.candidate
+            sdp: JSON.stringify(ice.candidate)
         });
-        console.log("Sent new ICE candidate");
+        console.log("Sent new ICE candidate "+JSON.stringify(ice.candidate));
     }
 }
 function receiveIce(ice)
 {
-    console.log("Received new ICE Candidate");
+    console.log("Received new ICE Candidate: "+JSON.stringify(ice));
     var candidate = new RTCIceCandidate(ice.candidate);
     pc.addIceCandidate(candidate).catch();
 }
@@ -131,7 +154,6 @@ function createRPC() {
 function answerCall(call)
 {
     var localStream = null;
-    createRPC();
     console.log("Answering a call from: "+ call.data().username);
     //createRPC();
     pc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
@@ -149,7 +171,7 @@ function answerCall(call)
             username: username.value,
             targetUsername: targetUsername.value,
             type: "video-answer",
-            sdp: JSON.stringify(pc.localDescription)
+            sdp: pc.localDescription
         });
     }).catch();
 
@@ -179,7 +201,7 @@ function listenEvent()
              else if(type == "video-answer")
              {
                console.log("Received video-answer");
-               pc.setRemoteDescription(JSON.parse(doc.data().sdp)).catch();
+               pc.setRemoteDescription(doc.data().sdp).catch();
              }
         });
 }
@@ -193,4 +215,4 @@ function handleTrackEvent(event)
 
 
 
-getMedia(pc);
+

@@ -16,8 +16,11 @@ var db = firebase.firestore();
 const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
+var studentRadio = document.getElementById("studentRadio");
+var classroomRadio = document.getElementById("classroomRadio");
 var pc=null;
-var isCaller = null;
+var isCaller = true;
+var isStudent = true;
 var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
 var mediaDetails;
 
@@ -27,6 +30,22 @@ function setRandomUser(textbox)
 {
   textbox.value = randomValue;
 }
+
+studentRadio.addEventListener("click", roleSet);
+classroomRadio.addEventListener("click", roleSet);
+function roleSet()
+{
+  if(studentRadio.checked) {
+    console.log("Switched role to Student");
+    isStudent = true;
+  }
+  if(classroomRadio.checked) {
+    console.log("Switched role to Classroom");
+    isStudent = false;
+  }
+
+}
+
 
 
 
@@ -41,30 +60,25 @@ document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
 function connect()
 {
-    if(targetUsername.value == "")
-    {
-      isCaller = false;
-      console.log("You are the Callee");
-    }
-    else
-    {
-      isCaller = true;
-      console.log("You are the caller");
-    }
+  listenEvent();
+  if(isCaller)
+  {
+  createPeerConnection();
   mediaDetails = getMedia(pc);
+  }
 }
 function call()
 {
-  listenEvent();
-}
 
+}
+function createPeerConnection(){
 //Declaring iceServers and creating a new PeerConnection
 const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
 pc = new RTCPeerConnection(config);
-pc.onnegotiationneeded = handleNegotiation;
+pc.onnegotiationneeded = offer;
 pc.onicecandidate = sendIce;
 pc.ontrack = handleTrackEvent;
-
+}
 //Getting the media from the browser asynchronously
 async function getMedia(pc) {
   let stream = null;
@@ -89,7 +103,8 @@ async function getMedia(pc) {
 
 
 
-function handleNegotiation(){
+function offer(){
+
 //Creating a new offer and then set the local description of the RTCPeerConnection pc
 pc.createOffer().then(function (offer) {
   console.log("Offer created!");
@@ -99,7 +114,7 @@ pc.createOffer().then(function (offer) {
       username: username.value,
       targetUsername: targetUsername.value,
       type: "video-offer",
-      sdp: pc.localDescription
+      sdp: pc.localDescription.toString()
   });
 });
 
@@ -109,8 +124,8 @@ function sendToServer(info)
   console.log("Sending data from "+ info['username']+" to "+ info['targetUsername'] );
   var user = info["username"];
   db.collection("SDP").doc(user).set(info)
-      .then(function(docRef) {
-        console.log("Document written with ID: ", docRef.id);
+      .then(function() {
+        console.log("Document written ");
       })
       .catch(function(error) {
         console.error("Error adding document: ", error);
@@ -126,16 +141,18 @@ function sendIce(ice) {
             username: username.value,
             targetUsername: targetUsername.value,
             type: "ice-candidate",
-            sdp: JSON.stringify(ice.candidate)
+            sdp: ice.candidate.toString()
         });
         console.log("Sent new ICE candidate "+JSON.stringify(ice.candidate));
     }
 }
 function receiveIce(ice)
 {
-    console.log("Received new ICE Candidate: "+JSON.stringify(ice));
-    var candidate = new RTCIceCandidate(ice.candidate);
-    pc.addIceCandidate(candidate).catch();
+    console.log("Received new ICE Candidate: "+ice.candidate);
+    var cand = new RTCIceCandidate(ice.candidate);
+    pc.addIceCandidate(cand).catch(function(e){
+      console.log(e)
+    });
 }
 
 function createRPC() {
@@ -151,17 +168,17 @@ function createRPC() {
 
 
 
-function answerCall(call)
+function answer(call)
 {
     var localStream = null;
-    console.log("Answering a call from: "+ call.data().username);
+    console.log("Answering a call from: "+ call.data().username+" with description "+ call.data().sdp);
     //createRPC();
     pc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
        localStream = stream;
        document.getElementById("localVideo").srcObject = localStream;
-       localStream.getTracks().forEach(track=> pc.addTrack(track,localStream));
+       localStream.getTracks().forEach((track) => pc.addTrack(track,localStream));
         }).then(function(){
             return pc.createAnswer();
         }).then(function(answer){
@@ -179,10 +196,17 @@ function answerCall(call)
 }
 function listenEvent()
 {
+
     //Setting up a listener for changes in targetUsername values in the database
+  console.log("Fetching records matching username: "+ targetUsername.value);
     db.collection("SDP").doc(targetUsername.value)
         .onSnapshot(function(doc) {
             console.log("Current data: ", doc.data());
+            if(doc.data()==undefined)
+            {
+              isCaller = true;
+              console.log("You are the caller")
+            }
              var user = doc.data().username;
              var targetUser = doc.data().targetUsername;
              var type = doc.data().type;
@@ -191,17 +215,21 @@ function listenEvent()
              if(type == "video-offer")
              {
                console.log("Received video offer!");
-                answerCall(doc);
+                answer(doc);
              }
              else if(type == "ice-candidate")
              {
-               console.log("Received ICE candidate");
+               console.log("Received ICE candidate from user "+ user);
                receiveIce(sdp);
              }
              else if(type == "video-answer")
              {
                console.log("Received video-answer");
-               pc.setRemoteDescription(doc.data().sdp).catch();
+                var desc = new RTCSessionDescription(sdp);
+                pc.setRemoteDescription(desc).catch(function(e){
+                  console.log(e);
+                });
+
              }
         });
 }

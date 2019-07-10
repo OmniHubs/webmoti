@@ -244,7 +244,7 @@ function listenEvent()
              else if(type == "video-answer")
              {
                console.log("Received video-answer");
-                var desc = new RTCSessionDescription(sdp);
+                var desc = new RTCSessionDescription(JSON.parse(sdp));
                 pc.setRemoteDescription(desc).catch(function(e){
                   console.log(e);
                 });

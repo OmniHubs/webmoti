@@ -60,16 +60,37 @@ document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
 function connect()
 {
-  listenEvent();
+  checkCaller();
   if(isCaller)
   {
-  createPeerConnection();
-  mediaDetails = getMedia(pc);
+  identifyAsCaller();
   }
+  listenEvent();
+
+
 }
 function call()
 {
+  if(isCaller)
+  {
 
+    createPeerConnection();
+    mediaDetails = getMedia(pc);
+  }
+
+
+}
+
+function checkCaller()
+{
+  if (targetUsername.value != "")
+  {
+    isCaller = true;
+  }
+  else
+  {
+    isCaller = false;
+  }
 }
 function createPeerConnection(){
 //Declaring iceServers and creating a new PeerConnection
@@ -110,20 +131,21 @@ pc.createOffer().then(function (offer) {
   console.log("Offer created!");
     return pc.setLocalDescription(offer);
 }).then(function(){
-  sendToServer({
-      username: username.value,
-      targetUsername: targetUsername.value,
-      type: "video-offer",
-      sdp: pc.localDescription.toString()
-  });
+  sendToServer(targetUsername.value, username.value, "video-offer", JSON.stringify(pc.localDescription));
 });
 
 }
-function sendToServer(info)
+function sendToServer(targetUsername, user , type, sdp)
 {
-  console.log("Sending data from "+ info['username']+" to "+ info['targetUsername'] );
-  var user = info["username"];
-  db.collection("SDP").doc(user).set(info)
+  const data = {
+    targetUsername: targetUsername,
+    username: user,
+    type: type,
+    sdp: sdp
+  };
+  console.log("Sending data from "+ user+" to "+ targetUsername);
+
+  db.collection("SDP").doc(targetUsername).set(data)
       .then(function() {
         console.log("Document written ");
       })
@@ -137,43 +159,38 @@ function sendToServer(info)
 function sendIce(ice) {
     if (ice.candidate)
     {
-        sendToServer({
-            username: username.value,
-            targetUsername: targetUsername.value,
-            type: "ice-candidate",
-            sdp: ice.candidate.toString()
-        });
+        sendToServer(targetUsername.value, username.value , "ice-candidate", JSON.stringify(ice));
         console.log("Sent new ICE candidate "+JSON.stringify(ice.candidate));
     }
 }
 function receiveIce(ice)
 {
     console.log("Received new ICE Candidate: "+ice.candidate);
-    var cand = new RTCIceCandidate(ice.candidate);
+    var cand = new RTCIceCandidate(ice);
     pc.addIceCandidate(cand).catch(function(e){
       console.log(e)
     });
 }
 
-function createRPC() {
-    rpc = new RTCPeerConnection(config);
-    rpc.onicecandidate = sendIce;
-    rpc.ontrack = handleTrackEvent;
-     rpc.onnegotiationneeded = handleNegotiation;
-    // rpc.onremovetrack = handleRemoveTrackEvent;
-    // rpc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
-    // rpc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
-    // rpc.onsignalingstatechange = handleSignalingStateChangeEvent;
- }
 
 
+function identifyAsCaller()
+{
+  console.log("Identifying self as Caller: "+username.value);
+  sendToServer(targetUsername.value, username.value,"initial-registration","");
+}
+function register()
+{
+  console.log("Identifying self with server: "+username.value);
+  sendToServer(targetUsername.value, username.value,"initial-registration","");
+}
 
 function answer(call)
 {
+    createPeerConnection();
     var localStream = null;
     console.log("Answering a call from: "+ call.data().username+" with description "+ call.data().sdp);
-    //createRPC();
-    pc.setRemoteDescription((JSON.parse(call.data().sdp))).then(function(){
+    pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(call.data().sdp))).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
        localStream = stream;
@@ -184,12 +201,7 @@ function answer(call)
         }).then(function(answer){
         return pc.setLocalDescription(answer)
     }).then(function(){
-        sendToServer({
-            username: username.value,
-            targetUsername: targetUsername.value,
-            type: "video-answer",
-            sdp: pc.localDescription
-        });
+        sendToServer(targetUsername.value,username.value, "video-answer",JSON.stringify(pc.localDescription));
     }).catch();
 
 
@@ -197,21 +209,28 @@ function answer(call)
 function listenEvent()
 {
 
+  var tempUser = targetUsername.value;
+  if(!isCaller)
+  {
+    tempUser = username.value;
+  }
+  tempUser = username.value;
     //Setting up a listener for changes in targetUsername values in the database
-  console.log("Fetching records matching username: "+ targetUsername.value);
-    db.collection("SDP").doc(targetUsername.value)
+  console.log("Fetching records matching username: "+ tempUser);
+    db.collection("SDP").doc(tempUser)
         .onSnapshot(function(doc) {
-            console.log("Current data: ", doc.data());
-            if(doc.data()==undefined)
-            {
-              isCaller = true;
-              console.log("You are the caller")
-            }
+            console.log("Received data: ", doc.data());
+
              var user = doc.data().username;
              var targetUser = doc.data().targetUsername;
              var type = doc.data().type;
              var sdp = doc.data().sdp;
 
+             if(type == "initial-registration")
+             {
+               console.log("Found caller username "+ user);
+               targetUsername.value = user;
+             }
              if(type == "video-offer")
              {
                console.log("Received video offer!");
@@ -220,7 +239,7 @@ function listenEvent()
              else if(type == "ice-candidate")
              {
                console.log("Received ICE candidate from user "+ user);
-               receiveIce(sdp);
+               receiveIce(JSON.parse(sdp));
              }
              else if(type == "video-answer")
              {
@@ -231,6 +250,8 @@ function listenEvent()
                 });
 
              }
+        }, function(error){
+          console.log(error);
         });
 }
 

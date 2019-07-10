@@ -159,14 +159,14 @@ function sendToServer(targetUsername, user , type, sdp)
 function sendIce(ice) {
     if (ice.candidate)
     {
-        sendToServer(targetUsername.value, username.value , "ice-candidate", JSON.stringify(ice));
+        sendToServer(targetUsername.value, username.value , "ice-candidate", JSON.stringify(ice.candidate));
         console.log("Sent new ICE candidate "+JSON.stringify(ice.candidate));
     }
 }
 function receiveIce(ice)
 {
-    console.log("Received new ICE Candidate: "+ice.candidate);
-    var cand = new RTCIceCandidate(ice);
+    console.log("Received new ICE Candidate: "+ ice);
+    var cand = new RTCIceCandidate(JSON.parse(ice));
     pc.addIceCandidate(cand).catch(function(e){
       console.log(e)
     });
@@ -239,7 +239,7 @@ function listenEvent()
              else if(type == "ice-candidate")
              {
                console.log("Received ICE candidate from user "+ user);
-               receiveIce(JSON.parse(sdp));
+               receiveIce(sdp);
              }
              else if(type == "video-answer")
              {

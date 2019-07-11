@@ -1,42 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="index.css" media="screen" />
+
+  <title>WebMoti</title>
+
+  <link rel="stylesheet" href="/css/main.css" />
+
+
+
 
 </head>
 
 <body>
 
-<div id="inputStyling">
-  <div>
-      <input type="text" id="loginInput"/>
-      <button id="loginBtn">Login</button>
-  </div>
 
-  <div>
-      <input type="text" id="otherUsernameInput"/>
-      <button id="connectToOtherUsernameBtn">Establish connection</button>
-    </div>
+
+  <div id="videos">
+    <video id="localVideo" autoplay muted playsinline></video>
+    <video id="remoteVideo" autoplay playsinline></video>
+  </div>
+  Connect to: <input type="text" name="targetUsername" id="targetUsername" value="" ><br/><br/>
+  My username: <input type="text" name="username" id="username" value="Please await randomly generated username or type your own" ><br/><br/>
+  <button type="button" id="connect">Connect</button>
+  <button type="button" id="call">Call</button>
+
+  <span>
+    <br/>
+  <input type="radio" name="role" id="studentRadio" value="Student" checked >Student<br>
+  <input type="radio" name="role" id="classroomRadio" value="Classroom">Classroom<br>
+  </span>
+    <span id="display"></span>
+
+
+<!--  THIS IS THE MESSAGE SENDING PEER-->
+  <div class="messagebox">
+    <label for="message">Enter a message:
+      <input type="text" name="message" id="message" placeholder="Message text"
+             inputmode="latin" size=60 maxlength=120 >
+    </label>
+    <button id="sendButton" name="sendButton" class="buttonright" disabled>
+      Send
+    </button>
+  </div>
+<!--  THIS IS THE MESSAGE RECIEVING PEER-->
+<div class="messagebox" id="receivebox">
+  <p>Message received:</p>
 </div>
 
+<!--  <div id="messaging" style="padding: 20px">-->
+<!--    <textarea rows="8" cols="20"></textarea> <br>-->
+<!--    <input name="searchTxt" type="text" id="sendMsg"> <button id="myBtn" type="submit">Send</button>-->
+<!--  </div>-->
 
-<video id="student-video" autoplay muted></video>
-<video id="classroom-video" autoplay></video>
+<!--  <script>-->
+<!--    let value = document.getElementById("myBtn").addEventListener("click", ()=>{-->
+<!--      let textvalue = document.getElementById("sendMsg").value;-->
+<!--      console.log(textvalue);-->
+<!--    });-->
+<!--    console.log(value);-->
+<!--  </script>-->
 
 
-<br />
-<button id="start" type="button" class="btn btn-primary btn-lg">
-    <span class="glyphicon-facetime-video" aria-hidden="true"></span>Call</button>
-<button id="dbQuery">Query the Firebase DB</button>
-<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 
-<script src="main.js"></script>
+
+  <!-- This file is automatically added/served when running "node index.js". -->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script src="js/main.js"></script>
+
 </body>
 
 </html>

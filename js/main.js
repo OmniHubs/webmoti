@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 //Initializing the variables
-const constraints = { audio: true, video: true };
+const constraints = { audio: false, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
 var roleRadio = document.getElementById("roleRadio");
@@ -30,7 +30,6 @@ function setRandomUser(textbox)
   textbox.value = randomValue;
 }
 
-roleRadio.addEventListener("click", roleSet);
 function roleSet()
 {
   if(roleRadio.checked) {

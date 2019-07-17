@@ -35,7 +35,7 @@
         <div class="switch">
           <label class="white-text">
             Student
-            <input type="checkbox">
+            <input id="roleRadio" type="checkbox">
             <span class="lever"></span>
             Classroom
           </label>
@@ -44,7 +44,7 @@
       <li><div class="col s6"><i class="material-icons">cast</i></div></li>
       <li>
         <div class="input-field">
-          <input disabled placeholder="Pending" id="targetUsername" type="text" class="validate white-text">
+          <input disabled placeholder="Pending" id="username" type="text" class="validate white-text">
           <label for="targetUsername" class="white-text">Your username:</label>
         </div>
       </li>
@@ -78,7 +78,10 @@
 <div class="section no-pad-bot" >
   <div class="container">
     <div class="row">
-    <div class="offset-s3"><video class="responsive-video z-depth-2" controls style="width: 1280px; height: 720px;"></video></div>
+    <div class="offset-s3">
+      <video id="remoteVideo" class="responsive-video z-depth-2" controls style="width: 1280px; height: 720px;"></video>
+      <video id="localVideo" class="responsive-video z-depth-2" controls style="width: 200px; height: 200px;"></video>
+    </div>
 
     </div>
   </div>
@@ -113,14 +116,19 @@
   </div>
   <div class="footer-copyright">
     <div class="container">
-      An IMDC <a class="orange-text text-lighten-3" href="http://materializecss.com"> Project</a>
+      An IMDC <a class="orange-text text-lighten-3" href="http://webmoti.org/"> Project</a>
     </div>
   </div>
 </footer>
 
 
 <!--  Scripts-->
-
+<!-- This file is automatically added/served when running "node index.js". -->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="js/main.js"></script>
 
 
 

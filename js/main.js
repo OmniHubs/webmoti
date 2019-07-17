@@ -16,8 +16,7 @@ var db = firebase.firestore();
 const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
-var studentRadio = document.getElementById("studentRadio");
-var classroomRadio = document.getElementById("classroomRadio");
+var roleRadio = document.getElementById("roleRadio");
 var pc=null;
 var isCaller = true;
 var isStudent = true;
@@ -31,17 +30,17 @@ function setRandomUser(textbox)
   textbox.value = randomValue;
 }
 
-studentRadio.addEventListener("click", roleSet);
-classroomRadio.addEventListener("click", roleSet);
+roleRadio.addEventListener("click", roleSet);
 function roleSet()
 {
-  if(studentRadio.checked) {
-    console.log("Switched role to Student");
-    isStudent = true;
-  }
-  if(classroomRadio.checked) {
+  if(roleRadio.checked) {
     console.log("Switched role to Classroom");
     isStudent = false;
+  }
+  else
+    {
+    console.log("Switched role to Student");
+    isStudent = true;
   }
 
 }

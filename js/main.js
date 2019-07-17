@@ -25,6 +25,16 @@ var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7
 var mediaDetails;
 
 
+// Zoom functionality
+// BEGIN ZOOM
+let zoomIn = document.getElementById("zoomin");
+let zoomOut = document.getElementById("zoomout");
+// For the Video ZOOM
+let capabilities;
+let settings;
+// END OF ZOOM
+
+
 // Datastream sending the text from one peer to the other peer
 var sendChannel=null;
 var receiveChannel=null;
@@ -110,7 +120,7 @@ pc.onicecandidate = sendIce;
 pc.ontrack = handleTrackEvent;
 
 pc.ondatachannel = receiveChannelCallback;
-pc.onconnectionstatechange = compConnection;
+// pc.onconnectionstatechange = compConnection;
 
 receiveChannel = pc.createDataChannel("receiveChannel");
 
@@ -120,6 +130,7 @@ sendChannel.onopen= handleSendChannelStatusChange;
 sendChannel.onclose= handleSendChannelStatusChange;
 }
 
+
 //Getting the media from the browser asynchronously
 async function getMedia(pc) {
   let stream = null;
@@ -128,10 +139,13 @@ async function getMedia(pc) {
 
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById('localVideo').srcObject = stream;
-    for (const track of stream.getTracks()) {
-      pc.addTrack(track);
-    }
 
+
+    // for (const track of stream.getVideoTracks()[0]) {
+    //   const capabilities = track.getCapabilities();
+    //   console.log("Da CAPABILITIES ARE:::: MAAYEEE*******:"+capabilities);
+    //   pc.addTrack(track);
+    // }
 
     /* use the stream */
   } catch(err) {
@@ -325,6 +339,40 @@ function handleReceiveMessage(event) {
 }
 
 
+async function zoom(zoomIn, zoomOut){
+  // wait for the getMedia function to finish running
+  await getMedia();
+  // Zooming Capabilities in this section
+  console.log("Zoom function is now running ");
+
+if(zoomIn){
+  console.log("ZOOOMING IN");
+}
+
+if(zoomOut){
+  console.log("ZOOOMING Out");
+}
+
+}
+
+zoomIn.addEventListener("click", function(){
+  zoom(true, false);
+  //// Zooming in
+
+});
+
+zoomOut.addEventListener("click", function(){
+  zoom(false, true);
+  //// Zooming in
+
+});
+
+// Waits for given amount of miliseconds
+function sleep(ms = 0) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+
 // Sends the message when we have established connection
 function sendMessage() {
   var message = messageInputBox.value;
@@ -334,16 +382,16 @@ function sendMessage() {
   messageInputBox.focus();
 }
 
-function compConnection(ev) {
-  console.log("********************THIS IS THE COMPCONNECTION*******************8");
-  // var channel = pc.createDataChannel("chat", {negotiated: true, id: 0});
-  // ev.channel.onopen = () =>{
-  //   channel.send("HELLO THIS IS A DATA CHANNEL");
-  // };
-  // channel.onmessage = function(ev){
-  //   console.log("**************event.data *******:  "+ev.data);
-  // }
-}
+// function compConnection(ev) {
+//   console.log("********************THIS IS THE COMPCONNECTION*******************8");
+//   var channel = pc.createDataChannel("chat", {negotiated: true, id: 0});
+//   ev.channel.onopen = () =>{
+//     channel.send("HELLO THIS IS A DATA CHANNEL");
+//   };
+//   channel.onmessage = function(ev){
+//     console.log("**************event.data *******:  "+ev.data);
+//   }
+// }
 
 
 

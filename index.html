@@ -5,7 +5,7 @@
 
   <title>WebMoti</title>
 
-  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="css/main.css" />
 
 
 
@@ -50,10 +50,16 @@
 
 
   <div>
-    <img width="400" height="800" src="./carrots.jpg">
     <p>Zoom in and out of the camera: </p>
-    <button id="zoomin">Zoom In</button>
-    <button id="zoomout">Zoom Out</button>
+    <input type="range" hidden>
+    <div>
+      <button id="zoomin">Zoom In</button>
+      <input type="text" id="zoomingIn" value="0" size="1">
+    </div>
+    <div style="margin-block: 10px">
+      <button id="zoomout">Zoom Out</button>
+      <input type="text" id="zoomingOut" value="0" size="1">
+    </div>
   </div>
 
 <!--  <div id="messaging" style="padding: 20px">-->

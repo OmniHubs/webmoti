@@ -30,6 +30,9 @@ function setRandomUser(textbox)
   textbox.value = randomValue;
 }
 
+initialize();
+
+
 roleRadio.addEventListener("click", roleSet);
 function roleSet()
 {
@@ -55,29 +58,23 @@ function clearBox()
 }
 
 //Adding an event listener to send our SDP info to the server
-document.getElementById("connect").addEventListener("click", connect);
+//document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
-function connect()
-{
-  checkCaller();
-  if(isCaller)
-  {
-  identifyAsCaller();
-  }
-  listenEvent();
-
-
-}
+// function connect()
+// {
+//   checkCaller();
+//   if(isCaller)
+//   {
+//   identifyAsCaller();
+//   }
+//   listenEvent();
+//
+//
+// }
 function call()
 {
-  if(isCaller)
-  {
-
-    createPeerConnection();
-    mediaDetails = getMedia(pc);
-  }
-
-
+  createPeerConnection();
+  mediaDetails = getMedia(pc);
 }
 
 function checkCaller()
@@ -91,6 +88,8 @@ function checkCaller()
     isCaller = false;
   }
 }
+
+
 function createPeerConnection(){
 //Declaring iceServers and creating a new PeerConnection
 const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
@@ -130,21 +129,23 @@ pc.createOffer().then(function (offer) {
   console.log("Offer created!");
     return pc.setLocalDescription(offer);
 }).then(function(){
+  console.log("Placing the offer in the database under "+targetUsername.value+" username");
   sendToServer(targetUsername.value, username.value, "video-offer", JSON.stringify(pc.localDescription));
 });
 
 }
-function sendToServer(targetUsername, user , type, sdp)
+function sendToServer(username, targetUsername , type, sdp)
 {
   const data = {
+    username: username,
     targetUsername: targetUsername,
-    username: user,
     type: type,
     sdp: sdp
   };
-  console.log("Sending data from "+ user+" to "+ targetUsername);
 
-  db.collection("SDP").doc(targetUsername).set(data)
+  console.log("Sending data from "+ username+" to "+ targetUsername + " with type "+ type);
+
+  db.collection("SDP").doc(username).set(data)
       .then(function() {
         console.log("Document written ");
       })
@@ -178,17 +179,18 @@ function identifyAsCaller()
   console.log("Identifying self as Caller: "+username.value);
   sendToServer(targetUsername.value, username.value,"initial-registration","");
 }
-function register()
+function initialize()
 {
   console.log("Identifying self with server: "+username.value);
-  sendToServer(targetUsername.value, username.value,"initial-registration","");
+  sendToServer(username.value, targetUsername.value,"initial-registration","");
+  listenSelf();
 }
 
 function answer(call)
 {
     createPeerConnection();
     var localStream = null;
-    console.log("Answering a call from: "+ call.data().username+" with description "+ call.data().sdp);
+    console.log("Answering a call from: "+ call.data().targetUsername+" with description "+ call.data().sdp);
     pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(call.data().sdp))).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
@@ -200,23 +202,18 @@ function answer(call)
         }).then(function(answer){
         return pc.setLocalDescription(answer)
     }).then(function(){
-        sendToServer(targetUsername.value,username.value, "video-answer",JSON.stringify(pc.localDescription));
+        sendToServer(targetUsername.value,username.value , "video-answer",JSON.stringify(pc.localDescription));
     }).catch();
 
 
 }
-function listenEvent()
+function listenTarget()
 {
-
-  var tempUser = targetUsername.value;
-  if(!isCaller)
-  {
-    tempUser = username.value;
-  }
-  tempUser = username.value;
+  // We are listening for changes within the target user
+  const target = targetUsername.value;
     //Setting up a listener for changes in targetUsername values in the database
-  console.log("Fetching records matching username: "+ tempUser);
-    db.collection("SDP").doc(tempUser)
+  console.log("Fetching records matching username: "+ target);
+    db.collection("SDP").doc(target)
         .onSnapshot(function(doc) {
             console.log("Received data: ", doc.data());
 
@@ -235,23 +232,56 @@ function listenEvent()
                console.log("Received video offer!");
                 answer(doc);
              }
-             else if(type == "ice-candidate")
-             {
-               console.log("Received ICE candidate from user "+ user);
-               receiveIce(sdp);
-             }
-             else if(type == "video-answer")
-             {
-               console.log("Received video-answer");
-                var desc = new RTCSessionDescription(JSON.parse(sdp));
-                pc.setRemoteDescription(desc).catch(function(e){
-                  console.log(e);
-                });
 
-             }
         }, function(error){
           console.log(error);
         });
+}
+function listenSelf()
+{
+  console.log("Listening for changes in the entry matching our username ");
+  //Setting up a listener for changes in targetUsername values in the database
+  db.collection("SDP").doc(username.value)
+    .onSnapshot(function(doc) {
+      console.log("Received data: ", doc.data());
+
+      var user = doc.data().username;
+      var targetUser = doc.data().targetUsername;
+      var type = doc.data().type;
+      var sdp = doc.data().sdp;
+
+      if(type == "initial-registration")
+      {
+        console.log("Found another registration for our user "+ user);
+      }
+      if(type == "video-offer")
+      {
+        console.log("Received video offer from remote peer " + targetUser);
+        console.log("Setting our targetUsername to "+targetUser);
+        targetUsername.value = targetUser;
+        listenTarget();
+        answer(doc);
+      }
+      else if(type == "ice-candidate")
+      {
+        console.log("Received ICE candidate from user "+ targetUser);
+        receiveIce(sdp);
+      }
+      else if(type == "video-answer")
+      {
+        console.log("Received video-answer");
+        var desc = new RTCSessionDescription(JSON.parse(sdp));
+        pc.setRemoteDescription(desc).catch(function(e){
+          console.log(e);
+        });
+
+      }
+
+    }, function(error){
+      console.log(error);
+    });
+
+
 }
 
 function handleTrackEvent(event)
@@ -259,7 +289,6 @@ function handleTrackEvent(event)
     console.log("Attaching remote video");
     document.getElementById("remoteVideo").srcObject = event.streams[0];
 }
-
 
 
 

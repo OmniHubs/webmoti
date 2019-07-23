@@ -57,6 +57,16 @@ function clearBox()
   targetUsername.value = '';
 }
 
+function logConnectionStates(event)
+{
+    console.log("Connection state changed to: "+pc.connectionState)
+}
+
+function logSignalingStates(event)
+{
+  console.log("Signaling state changed to: "+pc.connectionState)
+}
+
 //Adding an event listener to send our SDP info to the server
 //document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
@@ -76,6 +86,7 @@ function call()
   createPeerConnection();
   mediaDetails = getMedia(pc);
 }
+
 
 function checkCaller()
 {
@@ -97,25 +108,26 @@ pc = new RTCPeerConnection(config);
 pc.onnegotiationneeded = offer;
 pc.onicecandidate = sendIce;
 pc.ontrack = handleTrackEvent;
+pc.onconnectionstatechange = logConnectionStates;
+pc.onsignalingstatechange = logSignalingStates;
 }
-//Getting the media from the browser asynchronously
-async function getMedia(pc) {
+//Getting the media from the browser
+function getMedia(pc) {
   let stream = null;
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(function(stream) {
+      /* use the stream */
+      document.getElementById('localVideo').srcObject = stream;
+      for (const track of stream.getTracks()) {
+        pc.addTrack(track);
+      }
+    })
+    .catch(function(err) {
+      /* handle the error */
+      console.log("failed to add Webcam" + err);s
+    });
 
-  try {
 
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    document.getElementById('localVideo').srcObject = stream;
-    for (const track of stream.getTracks()) {
-      pc.addTrack(track);
-    }
-
-
-    /* use the stream */
-  } catch(err) {
-    /* handle the error */
-    console.log("failed to add Webcam" + err);
-  }
   console.log("Got the Webcam/Media from the browser");
 }
 
@@ -125,6 +137,7 @@ async function getMedia(pc) {
 function offer(){
 
 //Creating a new offer and then set the local description of the RTCPeerConnection pc
+
 pc.createOffer().then(function (offer) {
   console.log("Offer created!");
     return pc.setLocalDescription(offer);
@@ -227,11 +240,11 @@ function listenTarget()
                console.log("Found caller username "+ user);
                targetUsername.value = user;
              }
-             if(type == "video-offer")
-             {
-               console.log("Received video offer!");
-                answer(doc);
-             }
+             // if(type == "video-offer")
+             // {
+             //   console.log("Received video offer!");
+             //    answer(doc);
+             // }
 
         }, function(error){
           console.log(error);
@@ -240,7 +253,6 @@ function listenTarget()
 function listenSelf()
 {
   console.log("Listening for changes in the entry matching our username ");
-  //Setting up a listener for changes in targetUsername values in the database
   db.collection("SDP").doc(username.value)
     .onSnapshot(function(doc) {
       console.log("Received data: ", doc.data());
@@ -252,7 +264,7 @@ function listenSelf()
 
       if(type == "initial-registration")
       {
-        console.log("Found another registration for our user "+ user);
+        console.log("Found a registration for our user "+ user);
       }
       if(type == "video-offer")
       {

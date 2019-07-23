@@ -1,23 +1,22 @@
 // Your web app's Firebase configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
-  authDomain: "webmotia.firebaseapp.com",
-  databaseURL: "https://webmotia.firebaseio.com",
-  projectId: "webmotia",
-  storageBucket: "webmotia.appspot.com",
-  messagingSenderId: "606747164317",
-  appId: "1:606747164317:web:952c390708ccb09d"
+  apiKey: "AIzaSyBHOzn-tGLUbM4KJ5KUi45onbwC-3vifcM",
+  authDomain: "moti-e6d85.firebaseapp.com",
+  databaseURL: "https://moti-e6d85.firebaseio.com",
+  projectId: "moti-e6d85",
+  storageBucket: "moti-e6d85.appspot.com",
+  messagingSenderId: "432165062813",
+  appId: "1:432165062813:web:0be4916547dbac0f"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 //Initializing the variables
-const constraints = { audio: true, video: true };
+const constraints = { audio: false, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
-var studentRadio = document.getElementById("studentRadio");
-var classroomRadio = document.getElementById("classroomRadio");
+var roleRadio = document.getElementById("roleRadio");
 var pc=null;
 var isCaller = true;
 var isStudent = true;
@@ -25,49 +24,41 @@ var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7
 var mediaDetails;
 
 
-// Zoom functionality
-// BEGIN ZOOM
-let zoomIn = document.getElementById("zoomin");
-let zoomOut = document.getElementById("zoomout");
-// For the Video ZOOM
-let capabilities;
-let settings;
-// END OF ZOOM
-
-
-// Datastream sending the text from one peer to the other peer
-var sendChannel=null;
-var receiveChannel=null;
-var sendButton = document.getElementById("sendButton");
-var messageInputBox = document.getElementById("message");
-var receiveBox = document.getElementById("receivebox");
-
-sendButton.addEventListener('click', sendMessage, false);
-
 setRandomUser(username);
 function setRandomUser(textbox)
 {
   textbox.value = randomValue;
 }
 
-studentRadio.addEventListener("click", roleSet);
-classroomRadio.addEventListener("click", roleSet);
+// roleRadio.addEventListener("click", roleSet);
+initialize();
+
+
+// roleRadio.addEventListener("click", roleSet);
 function roleSet()
 {
-  if(studentRadio.checked) {
-    console.log("Switched role to Student");
-    isStudent = true;
-  }
-  if(classroomRadio.checked) {
+  if(roleRadio.checked) {
     console.log("Switched role to Classroom");
     isStudent = false;
+  }
+  else
+    {
+    console.log("Switched role to Student");
+    isStudent = true;
   }
 
 }
 
+//Materialize UI/UX
 
+$( document ).ready(function() {
+  $('#modal').modal();
 
-
+});
+$(document).ready(function(){
+  $('.tap-target').tapTarget('open');
+});
+// ENDOF Materialize UI/UX
 targetUsername.addEventListener("click", clearBox);
 function clearBox()
 {
@@ -75,29 +66,23 @@ function clearBox()
 }
 
 //Adding an event listener to send our SDP info to the server
-document.getElementById("connect").addEventListener("click", connect);
+//document.getElementById("connect").addEventListener("click", connect);
 document.getElementById("call").addEventListener("click", call);
-function connect()
-{
-  checkCaller();
-  if(isCaller)
-  {
-  identifyAsCaller();
-  }
-  listenEvent();
-
-
-}
+// function connect()
+// {
+//   checkCaller();
+//   if(isCaller)
+//   {
+//   identifyAsCaller();
+//   }
+//   listenEvent();
+//
+//
+// }
 function call()
 {
-  if(isCaller)
-  {
-
-    createPeerConnection();
-    mediaDetails = getMedia(pc);
-  }
-
-
+  createPeerConnection();
+  mediaDetails = getMedia(pc);
 }
 
 function checkCaller()
@@ -111,6 +96,8 @@ function checkCaller()
     isCaller = false;
   }
 }
+
+
 function createPeerConnection(){
 //Declaring iceServers and creating a new PeerConnection
 const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
@@ -118,19 +105,7 @@ pc = new RTCPeerConnection(config);
 pc.onnegotiationneeded = offer;
 pc.onicecandidate = sendIce;
 pc.ontrack = handleTrackEvent;
-
-pc.ondatachannel = receiveChannelCallback;
-// pc.onconnectionstatechange = compConnection;
-
-receiveChannel = pc.createDataChannel("receiveChannel");
-
-
-sendChannel = pc.createDataChannel("sendChannel");
-sendChannel.onopen= handleSendChannelStatusChange;
-sendChannel.onclose= handleSendChannelStatusChange;
 }
-
-
 //Getting the media from the browser asynchronously
 async function getMedia(pc) {
   let stream = null;
@@ -139,13 +114,10 @@ async function getMedia(pc) {
 
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById('localVideo').srcObject = stream;
+    for (const track of stream.getTracks()) {
+      pc.addTrack(track);
+    }
 
-
-    // for (const track of stream.getVideoTracks()[0]) {
-    //   const capabilities = track.getCapabilities();
-    //   console.log("Da CAPABILITIES ARE:::: MAAYEEE*******:"+capabilities);
-    //   pc.addTrack(track);
-    // }
 
     /* use the stream */
   } catch(err) {
@@ -165,21 +137,23 @@ pc.createOffer().then(function (offer) {
   console.log("Offer created!");
     return pc.setLocalDescription(offer);
 }).then(function(){
+  console.log("Placing the offer in the database under "+targetUsername.value+" username");
   sendToServer(targetUsername.value, username.value, "video-offer", JSON.stringify(pc.localDescription));
 });
 
 }
-function sendToServer(targetUsername, user , type, sdp)
+function sendToServer(username, targetUsername , type, sdp)
 {
   const data = {
+    username: username,
     targetUsername: targetUsername,
-    username: user,
     type: type,
     sdp: sdp
   };
-  console.log("Sending data from "+ user+" to "+ targetUsername);
 
-  db.collection("SDP").doc(targetUsername).set(data)
+  console.log("Sending data from "+ username+" to "+ targetUsername + " with type "+ type);
+
+  db.collection("SDP").doc(username).set(data)
       .then(function() {
         console.log("Document written ");
       })
@@ -213,17 +187,18 @@ function identifyAsCaller()
   console.log("Identifying self as Caller: "+username.value);
   sendToServer(targetUsername.value, username.value,"initial-registration","");
 }
-function register()
+function initialize()
 {
   console.log("Identifying self with server: "+username.value);
-  sendToServer(targetUsername.value, username.value,"initial-registration","");
+  sendToServer(username.value, targetUsername.value,"initial-registration","");
+  listenSelf();
 }
 
 function answer(call)
 {
     createPeerConnection();
     var localStream = null;
-    console.log("Answering a call from: "+ call.data().username+" with description "+ call.data().sdp);
+    console.log("Answering a call from: "+ call.data().targetUsername+" with description "+ call.data().sdp);
     pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(call.data().sdp))).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
@@ -235,23 +210,18 @@ function answer(call)
         }).then(function(answer){
         return pc.setLocalDescription(answer)
     }).then(function(){
-        sendToServer(targetUsername.value,username.value, "video-answer",JSON.stringify(pc.localDescription));
+        sendToServer(targetUsername.value,username.value , "video-answer",JSON.stringify(pc.localDescription));
     }).catch();
 
 
 }
-function listenEvent()
+function listenTarget()
 {
-
-  var tempUser = targetUsername.value;
-  if(!isCaller)
-  {
-    tempUser = username.value;
-  }
-  tempUser = username.value;
+  // We are listening for changes within the target user
+  const target = targetUsername.value;
     //Setting up a listener for changes in targetUsername values in the database
-  console.log("Fetching records matching username: "+ tempUser);
-    db.collection("SDP").doc(tempUser)
+  console.log("Fetching records matching username: "+ target);
+    db.collection("SDP").doc(target)
         .onSnapshot(function(doc) {
             console.log("Received data: ", doc.data());
 
@@ -270,23 +240,56 @@ function listenEvent()
                console.log("Received video offer!");
                 answer(doc);
              }
-             else if(type == "ice-candidate")
-             {
-               console.log("Received ICE candidate from user "+ user);
-               receiveIce(sdp);
-             }
-             else if(type == "video-answer")
-             {
-               console.log("Received video-answer");
-                var desc = new RTCSessionDescription(JSON.parse(sdp));
-                pc.setRemoteDescription(desc).catch(function(e){
-                  console.log(e);
-                });
 
-             }
         }, function(error){
           console.log(error);
         });
+}
+function listenSelf()
+{
+  console.log("Listening for changes in the entry matching our username ");
+  //Setting up a listener for changes in targetUsername values in the database
+  db.collection("SDP").doc(username.value)
+    .onSnapshot(function(doc) {
+      console.log("Received data: ", doc.data());
+
+      var user = doc.data().username;
+      var targetUser = doc.data().targetUsername;
+      var type = doc.data().type;
+      var sdp = doc.data().sdp;
+
+      if(type == "initial-registration")
+      {
+        console.log("Found another registration for our user "+ user);
+      }
+      if(type == "video-offer")
+      {
+        console.log("Received video offer from remote peer " + targetUser);
+        console.log("Setting our targetUsername to "+targetUser);
+        targetUsername.value = targetUser;
+        listenTarget();
+        answer(doc);
+      }
+      else if(type == "ice-candidate")
+      {
+        console.log("Received ICE candidate from user "+ targetUser);
+        receiveIce(sdp);
+      }
+      else if(type == "video-answer")
+      {
+        console.log("Received video-answer");
+        var desc = new RTCSessionDescription(JSON.parse(sdp));
+        pc.setRemoteDescription(desc).catch(function(e){
+          console.log(e);
+        });
+
+      }
+
+    }, function(error){
+      console.log(error);
+    });
+
+
 }
 
 function handleTrackEvent(event)
@@ -294,105 +297,6 @@ function handleTrackEvent(event)
     console.log("Attaching remote video");
     document.getElementById("remoteVideo").srcObject = event.streams[0];
 }
-
-// Right now I am trying to find out what would replace remoteConnection.ondatachannel = receiveChannelCallback
-
-
-function handleSendChannelStatusChange(){
-  if(sendChannel){
-    var state = sendChannel.readyState;
-
-    if(state === "open") {
-      console.log("**** THE sendChannel Ready state current status is ****: "+sendChannel.readyState);
-
-      messageInputBox.disable = false;
-      messageInputBox.focus();
-      sendButton.disabled = false;
-    }else{
-      messageInputBox.disabled = true;
-      sendButton.disabled = true;
-    }
-  }
-}
-
-function receiveChannelCallback(evt){
-  receiveChannel = evt.channel;
-  receiveChannel.onmessage = handleReceiveMessage;
-  receiveChannel.onopen = handleReceiveChannelStatusChange;
-  receiveChannel.onclose = handleReceiveChannelStatusChange;
-
-}
-
-// CHECKS IF THE RECEIVE CHANNEL IS CONNECTED
-function handleReceiveChannelStatusChange(event){
-  if(receiveChannel){
-    console.log("*******RECEIVE CHANNEL'S STATUS IS NOW: "+receiveChannel.readyState);
-  }
-}
-
-function handleReceiveMessage(event) {
-  var el = document.createElement("p");
-  var txtNode = document.createTextNode(event.data);
-
-  el.appendChild(txtNode);
-  receiveBox.appendChild(el);
-}
-
-
-async function zoom(zoomIn, zoomOut){
-  // wait for the getMedia function to finish running
-  await getMedia();
-  // Zooming Capabilities in this section
-  console.log("Zoom function is now running ");
-
-if(zoomIn){
-  console.log("ZOOOMING IN");
-}
-
-if(zoomOut){
-  console.log("ZOOOMING Out");
-}
-
-}
-
-zoomIn.addEventListener("click", function(){
-  zoom(true, false);
-  //// Zooming in
-
-});
-
-zoomOut.addEventListener("click", function(){
-  zoom(false, true);
-  //// Zooming in
-
-});
-
-// Waits for given amount of miliseconds
-function sleep(ms = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-
-// Sends the message when we have established connection
-function sendMessage() {
-  var message = messageInputBox.value;
-  sendChannel.send(message);
-
-  messageInputBox.value = "";
-  messageInputBox.focus();
-}
-
-// function compConnection(ev) {
-//   console.log("********************THIS IS THE COMPCONNECTION*******************8");
-//   var channel = pc.createDataChannel("chat", {negotiated: true, id: 0});
-//   ev.channel.onopen = () =>{
-//     channel.send("HELLO THIS IS A DATA CHANNEL");
-//   };
-//   channel.onmessage = function(ev){
-//     console.log("**************event.data *******:  "+ev.data);
-//   }
-// }
-
 
 
 

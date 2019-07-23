@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Webmoti</title>
+  <link rel="stylesheet" href="css/main.css" />
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="screen,projection">
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"></script>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.sidenav');
+      var instances =M.Sidenav.init(elems, {
+        inDuration: 350,
+        outDuration: 350,
+        edge: 'left' //or right
+      });
+        var elmems = document.getElementsByClassName('tap-target');
+        var instances = M.TapTarget.init(elmems, {
+            onOpen: alert("Hi"),
+            onClose: alert("Go die")
+        });
+    });
+  </script>
+
+</head>
+<body>
+<nav class="light-blue lighten-1" role="navigation">
+  <div class="nav-wrapper container row"><a id="logo-container" href="#" class="brand-logo"><img src="img/webmoti.jpg" style="width: 60px; height: 60px;"/></a>
+    <ul class="right hide-on-med-and-down">
+      <li>
+        <!-- Switch -->
+        <div class="switch">
+<!--          <label class="white-text">-->
+<!--            Student-->
+<!--            <input id="roleRadio" type="checkbox">-->
+<!--            <span class="lever"></span>-->
+<!--            Classroom-->
+<!--          </label>-->
+          <label class="white-text">
+
+            <input type="checkbox" class="filled-in" checked="checked" />
+            <span style="font-size: 20px">Student</span>
+
+          </label>
+        </div>
+      </li>
+      <li><div class="col s6"><i class="material-icons">cast</i></div></li>
+      <li>
+        <div class="input-field">
+          <input style="font-size: 20px" disabled placeholder="Pending" id="username" type="text" class="validate white-text">
+          <label style="font-size: 20px"  for="targetUsername" class="white-text">Your username:</label>
+        </div>
+      </li>
+      <li><i class="material-icons">forward</i></li>
+      <li>
+        <div class="input-field">
+        <input placeholder="Target Username" id="targetUsername" type="text" class="validate white-text">
+        </div>
+      </li>
+
+
+      <li>
+        <div>
+          <a class="waves-effect waves-light orange btn" id="call"><i class="material-icons left">call</i>Call</a>
+        </div>
+      </li>
+      <li>
+        <div>
+          <a class="waves-effect waves-light red btn"><i class="material-icons left">call_end</i>Hang Up</a>
+        </div>
+      </li>
+      <li>
+        <div id="modal" class="modal modal-fixed-footer">
+            <div class="modal-content" style="text-align: center; top: 30px">
+              <h4 style="color: black">Gamepad Controller Manual</h4>
+
+              <img src="img/webmoticontroller.jpg"/>
+            </div>
+            <div class="modal-footer">
+              <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+            </div>
+        </div>
+        <a href="#modal" class="waves-effect waves-light btn orange darken-1 modal-trigger"><i class="material-icons left">help</i>Help</a>
+      </li>
+      <li>
+        <div class="col s12">
+          <a href="https://codepen.io/collection/nbBqgY" target="_blank" class="brand-logo">Materialize Framework</a>
+          <ul class="right">
+            <li><a id="mybtn" href="tel:15558675309" class="waves-effect waves-light btn btn-large">(555) 867-5309</a></li>
+          </ul>
+        </div>
+
+        <!-- Tap Target Structure -->
+        <div class="tap-target teal lighten-3" data-activates="mybtn">
+          <div class="tap-target-content">
+            <h5>Available: 24/7</h5>
+            <p>Call us now to speak with someone about your matter.</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+
+
+    <ul id="nav-mobile" class="sidenav">
+      <li><a href="#">Navbar Link</a></li>
+    </ul>
+    <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+  </div>
+</nav>
+<div class="section no-pad-bot" >
+  <div class="container">
+    <div class="row">
+    <div class="myContainer offset-s3">
+      <video id="remoteVideo" class="responsive-video z-depth-2" controls style="width: 1280px; height: 720px;"></video>
+      <video id="localVideo" class="responsive-video z-depth-2" controls style="width: 200px; height: 200px;"></video>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<footer class="page-footer orange">
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h5 class="white-text">Webmoti</h5>
+        <p class="grey-text text-lighten-4">Here are some instructions</p>
+
+
+      </div>
+      <div class="col l3 s12">
+        <h5 class="white-text">Settings</h5>
+        <ul>
+          <li><a class="white-text" href="#!">Link 1</a></li>
+          <li><a class="white-text" href="#!">Link 2</a></li>
+        </ul>
+      </div>
+      <div class="col l3 s12">
+        <h5 class="white-text">Connect</h5>
+        <ul>
+          <li><a class="white-text" href="#!">Link 1</a></li>
+          <li><a class="white-text" href="#!">Link 2</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+      An IMDC <a class="orange-text text-lighten-3" href="http://webmoti.org/"> Project</a>
+    </div>
+  </div>
+</footer>
+
+
+<!--  Scripts-->
+<!-- This file is automatically added/served when running "node index.js". -->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="js/main.js"></script>
+
+
+
+
+
+</body>
+</html>

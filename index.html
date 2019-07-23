@@ -16,7 +16,7 @@
 
 
 
-  <div id="videos">
+  <div id="videos" class="myContainer">
     <video id="localVideo" autoplay muted playsinline></video>
     <video id="remoteVideo" autoplay playsinline></video>
   </div>
@@ -33,48 +33,6 @@
     <span id="display"></span>
 
 
-<!--  THIS IS THE MESSAGE SENDING PEER-->
-  <div class="messagebox">
-    <label for="message">Enter a message:
-      <input type="text" name="message" id="message" placeholder="Message text"
-             inputmode="latin" size=60 maxlength=120 >
-    </label>
-    <button id="sendButton" name="sendButton" class="buttonright" disabled>
-      Send
-    </button>
-  </div>
-<!--  THIS IS THE MESSAGE RECIEVING PEER-->
-<div class="messagebox" id="receivebox">
-  <p>Message received:</p>
-</div>
-
-
-  <div>
-    <p>Zoom in and out of the camera: </p>
-    <input type="range" hidden>
-    <div>
-      <button id="zoomin">Zoom In</button>
-      <input type="text" id="zoomingIn" value="0" size="1">
-    </div>
-    <div style="margin-block: 10px">
-      <button id="zoomout">Zoom Out</button>
-      <input type="text" id="zoomingOut" value="0" size="1">
-    </div>
-  </div>
-
-<!--  <div id="messaging" style="padding: 20px">-->
-<!--    <textarea rows="8" cols="20"></textarea> <br>-->
-<!--    <input name="searchTxt" type="text" id="sendMsg"> <button id="myBtn" type="submit">Send</button>-->
-<!--  </div>-->
-
-<!--  <script>-->
-<!--    let value = document.getElementById("myBtn").addEventListener("click", ()=>{-->
-<!--      let textvalue = document.getElementById("sendMsg").value;-->
-<!--      console.log(textvalue);-->
-<!--    });-->
-<!--    console.log(value);-->
-<!--  </script>-->
-
 
 
 
@@ -85,7 +43,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.dev.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/camera.js"></script>
 
 </body>
 

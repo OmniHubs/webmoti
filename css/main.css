@@ -2,11 +2,25 @@ body {
   font-family: sans-serif;
 }
 
-video {
-  max-width: 100%;
-  width: 320px;
+/*video {*/
+/*  max-width: 100%;*/
+/*  width: 320px;*/
+/*}*/
+
+.myContainer{
+  position: relative;  text-align: center;
+
 }
 
-#messaging {
-  padding: 30px;
+#localVideo{
+  position: absolute;
+  bottom: 70px;
+  right: 0px;
 }
+
+.tap-target {
+  color: #fff;}
+  a {
+    color: #fff;
+    text-decoration:underline;
+  }

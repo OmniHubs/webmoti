@@ -83,6 +83,7 @@ document.getElementById("call").addEventListener("click", call);
 // }
 function call()
 {
+
   createPeerConnection();
   mediaDetails = getMedia(pc);
 }
@@ -103,7 +104,17 @@ function checkCaller()
 
 function createPeerConnection(){
 //Declaring iceServers and creating a new PeerConnection
-const config= {iceServers: [{urls:'stun:stun.l.google.com:19302'}]};
+const config= {iceServers: [
+  {
+    urls:'stun:stun.l.google.com:19302'
+  },
+    {
+      urls: ["turns: numb.viagenie.ca", "turn: numb.viagenie.ca"],
+      username: "billsmith6991@gmail.com",
+      credential: "webmoti"
+    }
+
+]};
 pc = new RTCPeerConnection(config);
 pc.onnegotiationneeded = offer;
 pc.onicecandidate = sendIce;
@@ -113,18 +124,18 @@ pc.onsignalingstatechange = logSignalingStates;
 }
 //Getting the media from the browser
 function getMedia(pc) {
-  let stream = null;
+  let localStream = null;
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
       /* use the stream */
-      document.getElementById('localVideo').srcObject = stream;
-      for (const track of stream.getTracks()) {
-        pc.addTrack(track);
-      }
+      localStream = stream;
+      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+      document.getElementById('localVideo').srcObject = localStream;
+
     })
     .catch(function(err) {
       /* handle the error */
-      console.log("failed to add Webcam" + err);s
+      console.log("failed to add Webcam" + err);
     });
 
 
@@ -197,6 +208,7 @@ function initialize()
   console.log("Identifying self with server: "+username.value);
   sendToServer(username.value, targetUsername.value,"initial-registration","");
   listenSelf();
+
 }
 
 function answer(call)
@@ -204,12 +216,14 @@ function answer(call)
     createPeerConnection();
     var localStream = null;
     console.log("Answering a call from: "+ call.data().targetUsername+" with description "+ call.data().sdp);
-    pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(call.data().sdp))).then(function(){
+    console.log(JSON.parse(call.data().sdp));
+    var desc = new RTCSessionDescription(JSON.parse(call.data().sdp));
+    pc.setRemoteDescription(desc).then(function(){
        return navigator.mediaDevices.getUserMedia(constraints)
     }).then(function(stream){
        localStream = stream;
        document.getElementById("localVideo").srcObject = localStream;
-       localStream.getTracks().forEach((track) => pc.addTrack(track,localStream));
+       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
         }).then(function(){
             return pc.createAnswer();
         }).then(function(answer){
@@ -228,7 +242,6 @@ function listenTarget()
   console.log("Fetching records matching username: "+ target);
     db.collection("SDP").doc(target)
         .onSnapshot(function(doc) {
-            console.log("Received data: ", doc.data());
 
              var user = doc.data().username;
              var targetUser = doc.data().targetUsername;
@@ -298,7 +311,8 @@ function listenSelf()
 
 function handleTrackEvent(event)
 {
-    console.log("Attaching remote video");
+    console.log("Attaching remote video in signalling state: "+pc.signalingState+" and connection state: "+pc.connectionState);
+    console.log("Stream active status is: "+event.streams[0].active + " track readystate is: "+event.track.readyState + "track kind is: "+ event.track.kind + " track is remote: " + event.track.remote )
     document.getElementById("remoteVideo").srcObject = event.streams[0];
 }
 

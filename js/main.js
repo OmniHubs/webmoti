@@ -109,9 +109,9 @@ const config= {iceServers: [
     urls:'stun:stun.l.google.com:19302'
   },
     {
-      urls: ["turns: numb.viagenie.ca", "turn: numb.viagenie.ca"],
-      username: "billsmith6991@gmail.com",
-      credential: "webmoti"
+      urls: ["turn: app.webmoti.org:443"],
+      username: "webmoti",
+      credential: "webmoti_test"
     }
 
 ]};

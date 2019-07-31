@@ -59,12 +59,16 @@ function clearBox()
 
 function logConnectionStates(event)
 {
-    console.log("Connection state changed to: "+pc.connectionState)
+    console.log("Connection state changed to: "+pc.connectionState);
 }
 
 function logSignalingStates(event)
 {
-  console.log("Signaling state changed to: "+pc.signalingState)
+  console.log("Signaling state changed to: "+pc.signalingState);
+  if(pc.signalingState=='stable')
+  {
+    keyboardListener();
+  }
 }
 
 //Adding an event listener to send our SDP info to the server
@@ -179,7 +183,7 @@ function sendToServer(username, targetUsername , type, sdp)
 }
 function sendToPeer(str)
 {
-  sendToServer(username.value,targetUsername.value,"peer-data",str);
+  sendToServer(targetUsername.value,username.value,"peer-data",str);
 }
 
 //The ice sending/receiving functions
@@ -199,6 +203,35 @@ function receiveIce(ice)
     });
 }
 
+function keyboardListener()
+{
+  console.log("Adding the keyboard event listener")
+  document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+
+    switch(keyName) {
+      case 'w':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
+      case 'a':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
+      case 's':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
+      case 'd':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
+      default:
+      // code block
+    }
+
+  }, false);
+}
 
 
 function identifyAsCaller()
@@ -310,7 +343,7 @@ function listenSelf()
       }
       else if(type == "peer-data")
       {
-        console.log("Received data from peer: "+targetUser);
+        console.log("Received communication from peer: "+targetUser);
         handlePeerData(sdp)
       }
 

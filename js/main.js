@@ -64,7 +64,7 @@ function logConnectionStates(event)
 
 function logSignalingStates(event)
 {
-  console.log("Signaling state changed to: "+pc.connectionState)
+  console.log("Signaling state changed to: "+pc.signalingState)
 }
 
 //Adding an event listener to send our SDP info to the server
@@ -177,7 +177,10 @@ function sendToServer(username, targetUsername , type, sdp)
         console.error("Error adding document: ", error);
       });
 }
-
+function sendToPeer(str)
+{
+  sendToServer(username.value,targetUsername.value,"peer-data",str);
+}
 
 //The ice sending/receiving functions
 function sendIce(ice) {
@@ -263,6 +266,10 @@ function listenTarget()
           console.log(error);
         });
 }
+function handlePeerData(peerData)
+{
+  console.log(peerData);
+}
 function listenSelf()
 {
   console.log("Listening for changes in the entry matching our username ");
@@ -300,6 +307,11 @@ function listenSelf()
           console.log(e);
         });
 
+      }
+      else if(type == "peer-data")
+      {
+        console.log("Received data from peer: "+targetUser);
+        handlePeerData(sdp)
       }
 
     }, function(error){

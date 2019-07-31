@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7a31b6e4-56ab-4808-97f0-1062a28fe350" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -21,11 +22,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="1534" />
-    <option name="width" value="2316" />
-    <option name="height" value="2170" />
   </component>
   <component name="ProjectId" id="1NVqXjFeQIUcqOfP3zJp77qCZu1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -101,7 +97,7 @@
       <workItem from="1562600984517" duration="17489000" />
       <workItem from="1562698206724" duration="8160000" />
       <workItem from="1562719122475" duration="12555000" />
-      <workItem from="1564585468883" duration="3557000" />
+      <workItem from="1564585468883" duration="5090000" />
     </task>
     <servers />
   </component>

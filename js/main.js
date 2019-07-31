@@ -17,6 +17,10 @@ const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
 var roleRadio = document.getElementById("roleRadio");
+var remoteVideo = document.getElementById("remoteVideo");
+var localVideo = document.getElementById("localVideo");
+var hangupButton = document.getElementById("hangup");
+var callButton = document.getElementById("call");
 var pc=null;
 var isCaller = true;
 var isStudent = true;
@@ -60,6 +64,12 @@ function clearBox()
 function logConnectionStates(event)
 {
     console.log("Connection state changed to: "+pc.connectionState);
+    if(pc.connectionState=='connected')
+    {
+      hangupButton.classList.remove('disabled');
+      callButton.classList.add('disabled')
+
+    }
 }
 
 function logSignalingStates(event)
@@ -73,7 +83,7 @@ function logSignalingStates(event)
 
 //Adding an event listener to send our SDP info to the server
 //document.getElementById("connect").addEventListener("click", connect);
-document.getElementById("call").addEventListener("click", call);
+callButton.addEventListener("click", call);
 // function connect()
 // {
 //   checkCaller();
@@ -90,6 +100,44 @@ function call()
 
   createPeerConnection();
   mediaDetails = getMedia(pc);
+}
+
+hangupButton.addEventListener("click", hangup);
+function hangup()
+{
+  console.log("Hanging up");
+  if (pc) {
+    pc.ontrack = null;
+    pc.onremovetrack = null;
+    pc.onremovestream = null;
+    pc.onicecandidate = null;
+    pc.oniceconnectionstatechange = null;
+    pc.onsignalingstatechange = null;
+    pc.onicegatheringstatechange = null;
+    pc.onnegotiationneeded = null;
+
+    if (remoteVideo.srcObject) {
+      remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+
+    if (localVideo.srcObject) {
+      localVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+
+    pc.close();
+    pc = null;
+  }
+
+  remoteVideo.removeAttribute("src");
+  remoteVideo.removeAttribute("srcObject");
+  localVideo.removeAttribute("src");
+  remoteVideo.removeAttribute("srcObject");
+
+  hangupButton.classList.add('disabled');
+  callButton.classList.remove('disabled')
+
+
+
 }
 
 
@@ -353,6 +401,9 @@ function listenSelf()
 
 
 }
+
+
+
 
 function handleTrackEvent(event)
 {

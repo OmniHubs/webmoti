@@ -21,6 +21,7 @@ var remoteVideo = document.getElementById("remoteVideo");
 var localVideo = document.getElementById("localVideo");
 var hangupButton = document.getElementById("hangup");
 var callButton = document.getElementById("call");
+var localStream = null;
 var pc=null;
 var isCaller = true;
 var isStudent = true;
@@ -70,7 +71,7 @@ function logConnectionStates(event)
 
 
     }
-    if(pc.connectionState=='failed')
+    if(pc.connectionState=='failed' || pc.connectionState=='disconnected')
     {
       hangup();
     }
@@ -82,6 +83,7 @@ function logSignalingStates(event)
   if(pc.signalingState=='stable')
   {
     keyboardListener();
+    initZoom(localStream);
   }
 }
 
@@ -180,7 +182,7 @@ pc.onsignalingstatechange = logSignalingStates;
 }
 //Getting the media from the browser
 function getMedia(pc) {
-  let localStream = null;
+
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function(stream) {
       /* use the stream */
@@ -302,7 +304,7 @@ function initialize()
 function answer(call)
 {
     createPeerConnection();
-    var localStream = null;
+
     console.log("Answering a call from: "+ call.data().targetUsername+" with description "+ call.data().sdp);
     console.log(JSON.parse(call.data().sdp));
     var desc = new RTCSessionDescription(JSON.parse(call.data().sdp));
@@ -354,6 +356,25 @@ function listenTarget()
 function handlePeerData(peerData)
 {
   console.log(peerData);
+
+  switch(peerData) {
+    case 'w':
+      zoomIn(1);
+      break;
+    case 'a':
+      //add motor left
+      break;
+    case 's':
+      zoomOut(1);
+      break;
+    case 'd':
+      //add motor right
+      break;
+    default:
+    // code block
+  }
+
+
 }
 function listenSelf()
 {

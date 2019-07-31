@@ -54,7 +54,6 @@ function roleSet()
 
 
 
-
 targetUsername.addEventListener("click", clearBox);
 function clearBox()
 {
@@ -67,8 +66,14 @@ function logConnectionStates(event)
     if(pc.connectionState=='connected')
     {
       hangupButton.classList.remove('disabled');
-      callButton.classList.add('disabled')
+      callButton.classList.add('disabled');
+      zoom();
 
+
+    }
+    if(pc.connectionState=='failed')
+    {
+      hangup();
     }
 }
 

@@ -67,7 +67,6 @@ function logConnectionStates(event)
     {
       hangupButton.classList.remove('disabled');
       callButton.classList.add('disabled');
-      zoom();
 
 
     }
@@ -258,7 +257,7 @@ function receiveIce(ice)
 
 function keyboardListener()
 {
-  console.log("Adding the keyboard event listener")
+  console.log("Adding the keyboard event listener");
   document.addEventListener('keydown', (event) => {
     const keyName = event.key;
 

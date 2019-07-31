@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a31b6e4-56ab-4808-97f0-1062a28fe350" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/js/zoom.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/css/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/main.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/zoom.js" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -99,7 +99,7 @@
       <workItem from="1562600984517" duration="17489000" />
       <workItem from="1562698206724" duration="8160000" />
       <workItem from="1562719122475" duration="12555000" />
-      <workItem from="1564585468883" duration="8080000" />
+      <workItem from="1564585468883" duration="8886000" />
     </task>
     <servers />
   </component>

@@ -7,22 +7,22 @@
 
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="css/main.css" rel="stylesheet" media="screen" />
+
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" media="screen,projection">
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-  <script src="js/zoom.js"></script>
+
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var elems = document.querySelectorAll('.sidenav');
-      var instances =M.Sidenav.init(elems, {
-        inDuration: 350,
-        outDuration: 350,
-        edge: 'left' //or right
+      document.addEventListener('DOMContentLoaded', function() {
+          var elems = document.querySelectorAll('.sidenav');
+          var instances =M.Sidenav.init(elems, {
+              inDuration: 350,
+              outDuration: 350,
+              edge: 'left' //or right
+          });
       });
-    });
   </script>
 
 </head>
@@ -51,7 +51,7 @@
       <li><i class="material-icons">forward</i></li>
       <li>
         <div class="input-field">
-        <input placeholder="Target Username" id="targetUsername" type="text" class="validate white-text">
+          <input placeholder="Target Username" id="targetUsername" type="text" class="validate white-text">
         </div>
       </li>
 
@@ -63,7 +63,7 @@
       </li>
       <li>
         <div>
-          <a class="waves-effect waves-light red btn disabled" id="hangup"><i class="material-icons left">call_end</i>Hang Up</a>
+          <a class="waves-effect waves-light red btn"><i class="material-icons left">call_end</i>Hang Up</a>
         </div>
       </li>
 
@@ -78,13 +78,10 @@
 <div class="section no-pad-bot" >
   <div class="container">
     <div class="row">
-    <div class="offset-s3" >
-      <div id="stage">
-      <video id="remoteVideo" autoplay="true" class="responsive-video z-depth-2" controls style="width: 1280px; height: 720px;"></video>
-      <video id="localVideo" autoplay="true" muted="true" class="responsive-video z-depth-2" controls style="width: 200px; height: 200px;"></video>
-      <div id="controls"></div>
+      <div class="offset-s3">
+        <video id="remoteVideo" autoplay="true" class="responsive-video z-depth-2" controls style="width: 1280px; height: 720px;"></video>
+        <video id="localVideo" autoplay="true" muted="true" class="responsive-video z-depth-2" controls style="width: 200px; height: 200px;"></video>
       </div>
-    </div>
 
     </div>
   </div>

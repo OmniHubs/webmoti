@@ -83,7 +83,7 @@ function logSignalingStates(event)
   if(pc.signalingState=='stable')
   {
     keyboardListener();
-    initZoom(localStream);
+    zoom();
   }
 }
 
@@ -265,20 +265,21 @@ function keyboardListener()
 
     switch(keyName) {
       case 'w':
-        sendToPeer(keyName);
-        sendToPeer('');
+        zoomIn();
         break;
       case 'a':
         sendToPeer(keyName);
         sendToPeer('');
         break;
       case 's':
-        sendToPeer(keyName);
-        sendToPeer('');
+        zoomOut();
         break;
       case 'd':
         sendToPeer(keyName);
         sendToPeer('');
+        break;
+      case 'r':
+        resetZoom();
         break;
       default:
       // code block

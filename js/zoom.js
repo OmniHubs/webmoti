@@ -24,7 +24,9 @@ console.log(zoomProp);
 function zoomOut()
 {
   console.log("Zooming out to zoomLevel: "+ zoomLevel);
+  if(zoomLevel > 1){
   zoomLevel = zoomLevel - 1;
+  }
  remoteVideo.style[zoomProp]='scale('+zoomLevel+')';
 
 }

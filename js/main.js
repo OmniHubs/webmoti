@@ -12,6 +12,9 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
+//Initialize Socket.io
+var socket = io.connect('http://localhost:3000');
+
 //Initializing the variables
 const constraints = { audio: true, video: true };
 var targetUsername = document.getElementById("targetUsername");
@@ -264,6 +267,10 @@ function keyboardListener()
     const keyName = event.key;
 
     switch(keyName) {
+      case 'q':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
       case 'w':
         zoomIn();
         break;
@@ -364,12 +371,17 @@ function handlePeerData(peerData)
       break;
     case 'a':
       //add motor left
+      socket.emit('left');
       break;
     case 's':
       zoomOut(1);
       break;
     case 'd':
       //add motor right
+      socket.emit('right');
+      break;
+    case 'q':
+      socket.emit('stop');
       break;
     default:
     // code block

@@ -307,6 +307,11 @@ function initialize()
   sendToServer(username.value, targetUsername.value,"initial-registration","");
   listenSelf();
 
+  socket.on('connect', () => {
+    console.log("Found Node Server, setting self as classroom");
+    isStudent = false;
+  });
+
 }
 
 function answer(call)

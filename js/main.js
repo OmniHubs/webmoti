@@ -41,23 +41,6 @@ function setRandomUser(textbox)
 initialize();
 
 
-roleRadio.addEventListener("click", roleSet);
-function roleSet()
-{
-  if(roleRadio.checked) {
-    console.log("Switched role to Classroom");
-    isStudent = false;
-  }
-  else
-    {
-    console.log("Switched role to Student");
-    isStudent = true;
-  }
-
-}
-
-
-
 targetUsername.addEventListener("click", clearBox);
 function clearBox()
 {

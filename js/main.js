@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 //Initialize Socket.io
-var socket = io.connect('http://localhost:3000');
+var socket = io('http://localhost:3000',{reconnectionAttempts: 3});
 
 //Initializing the variables
 const constraints = { audio: true, video: true };

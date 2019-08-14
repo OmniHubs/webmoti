@@ -17,6 +17,7 @@ var socket = io('http://localhost:3000',{reconnectionAttempts: 3});
 
 //Initializing the variables
 const constraints = { audio: true, video: true };
+var targetIcon= document.getElementById("targetIcon");
 var targetUsername = document.getElementById("targetUsername");
 var username = document.getElementById("username");
 var roleRadio = document.getElementById("roleRadio");
@@ -292,6 +293,9 @@ function initialize()
 
   socket.on('connect', () => {
     console.log("Found Node Server, setting self as classroom");
+    targetIcon.style.display = 'none';
+    targetUsername.hidden = true;
+    callButton.style.display = 'none';
     isStudent = false;
   });
 

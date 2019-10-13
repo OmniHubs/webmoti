@@ -272,6 +272,10 @@ function keyboardListener()
       case 'r':
         resetZoom();
         break;
+      case 'Enter':
+        sendToPeer(keyName);
+        sendToPeer('');
+        break;
       default:
       // code block
     }
@@ -375,6 +379,9 @@ function handlePeerData(peerData)
     case 'q':
       socket.emit('stop');
       break;
+    case 'Enter':
+      waveHand();
+      break;
     default:
     // code block
   }
@@ -443,5 +450,10 @@ function handleTrackEvent(event)
 }
 
 
-
+function waveHand()
+{
+  document.getElementById("hand").style.display = "block";
+  document.getElementById("hand").classList.add('handAnimation');
+  setTimeout(function(){ document.getElementById("hand").style.display = "none"; }, 5000)
+}
 

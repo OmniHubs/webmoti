@@ -30,12 +30,26 @@ button{font-size:150%;text-align:center;display:block;}
 #change button{width:60px;border:none;background:#fff;}
 #hand {background-image: url('../img/hand.png'); height: 355px; width: 253px; position: absolute; z-index: 3; display:none; animation-name: handAnimation; animation-duration: 5s;}
 
-@keyframes handAnimation {
-  0%   {left:35%; top:40%;}
-  25%  {left:60%; top:40%;}
-  50%  {left:65%; top:40%;}
-  75%  {left:60%; top:40%;}
-  85%  {left:35%; top:40%;}
-  100% {left:35%; top:40%;}
+@keyframes handAnimation0 {
+  0%   {left:35%; top:45%;}
+  25%  {left:60%; top:60%;}
+  50%  {left:65%; top:45%;}
+  75%  {left:60%; top:65%;}
+  85%  {left:35%; top:45%;}
+  100% {left:35%; top:65%;}
+
+}
+@keyframes handAnimation1 {
+  0%   {left:35%; top:45%;}
+  10%  {left:60%; top:60%;}
+  20%  {left:35%; top:45%;}
+  30%  {left:60%; top:60%;}
+  40%  {left:35%; top:45%;}
+  50%  {left:60%; top:60%;}
+  60%  {left:35%; top:45%;}
+  70%  {left:60%; top:60%;}
+  80%  {left:35%; top:45%;}
+  90%  {left:60%; top:60%;}
+  100% {left:35%; top:45%;}
 
 }

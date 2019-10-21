@@ -31,6 +31,7 @@ var isCaller = true;
 var isStudent = true;
 var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
 var mediaDetails;
+var coolDown = false;
 
 
 setRandomUser(username);
@@ -273,8 +274,12 @@ function keyboardListener()
         resetZoom();
         break;
       case 'Enter':
+        if(!coolDown){
         sendToPeer(keyName);
         sendToPeer('');
+        coolDown = true;
+        }
+        setTimeout(noSpam, 60000);
         break;
       default:
       // code block
@@ -457,3 +462,8 @@ function waveHand()
   setTimeout(function(){ document.getElementById("hand").style.display = "none"; }, 5000)
 }
 
+function noSpam()
+{
+  coolDown = false;
+  
+}

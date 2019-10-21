@@ -32,6 +32,8 @@ var isStudent = true;
 var randomValue = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
 var mediaDetails;
 var coolDown = false;
+var urgentQuestion = false;
+var Bell = new Audio('js/bell.mp3');
 
 
 setRandomUser(username);
@@ -274,12 +276,27 @@ function keyboardListener()
         resetZoom();
         break;
       case 'Enter':
+        if(coolDown)
+        {
+          document.getElementsByClassName('timer-group')[0].style.display = "block";
+          document.getElementsByClassName('hand')[0].classList.add('spin1');
+        }
         if(!coolDown){
+          if(!urgentQuestion)
+          {
         sendToPeer(keyName);
         sendToPeer('');
+          }
+          if(urgentQuestion)
+          {
+            sendToPeer('urgentQ');
+            sendToPeer('');
+          }
         coolDown = true;
         }
-        setTimeout(noSpam, 60000);
+        setTimeout(finishCooldown, 60000);
+        setTimeout(urgentCooldown, 120000);
+        urgentQuestion=true;
         break;
       default:
       // code block
@@ -387,6 +404,9 @@ function handlePeerData(peerData)
     case 'Enter':
       waveHand();
       break;
+    case 'urgentQ':
+      urgentHand();
+      break;
     default:
     // code block
   }
@@ -458,12 +478,24 @@ function handleTrackEvent(event)
 function waveHand()
 {
   document.getElementById("hand").style.display = "block";
-  document.getElementById("hand").classList.add('handAnimation');
+  document.getElementById("hand").classList.add('handAnimation0');
   setTimeout(function(){ document.getElementById("hand").style.display = "none"; }, 5000)
 }
 
-function noSpam()
+function urgentHand()
+{
+
+  document.getElementById("hand").style.display = "block";
+  document.getElementById("hand").classList.add('handAnimation1');
+  Bell.play();
+  setTimeout(function(){ document.getElementById("hand").style.display = "none"; }, 5000)
+}
+function finishCooldown()
 {
   coolDown = false;
-  
+  document.getElementsByClassName('timer-group')[0].style.display = "none";
+}
+function urgentCooldown()
+{
+  urgentQuestion = false;
 }

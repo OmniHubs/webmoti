@@ -34,6 +34,8 @@ var mediaDetails;
 var coolDown = false;
 var urgentQuestion = false;
 var Bell = new Audio('js/bell.mp3');
+var minuteTimer = 60;
+var minuteTimerAct = false;
 
 
 setRandomUser(username);
@@ -280,6 +282,12 @@ function keyboardListener()
         {
           document.getElementsByClassName('timer-group')[0].style.display = "block";
           document.getElementsByClassName('hand')[0].classList.add('spin1');
+
+          if(!minuteTimerAct)
+          {
+            minuteTimerAct = true;
+          onTimer();
+          }
         }
         if(!coolDown){
           if(!urgentQuestion)
@@ -498,4 +506,19 @@ function finishCooldown()
 function urgentCooldown()
 {
   urgentQuestion = false;
+}
+
+
+function onTimer() {
+  if(minuteTimerAct){
+  document.getElementById('timerText').innerHTML = minuteTimer.toString();
+  minuteTimer--;
+  if (minuteTimer < 0) {
+      minuteTimer = 60;
+      minuteTimerAct = false;
+  }
+  else {
+    setTimeout(onTimer, 1000);
+  }
+  }
 }
